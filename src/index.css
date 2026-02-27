@@ -1,0 +1,544 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ══════════════════════════════════════════════════════════════
+   DESIGN SYSTEM 3.0 — Creative & Luminous
+   Palette: Stone Warm (#EAEAE5) + Dominant (#1C1917) + Acid (#CCFF00)
+   Font: Inter (UI) · JetBrains Mono (code)
+   Style: Editorial · Transparent · Organic
+   ══════════════════════════════════════════════════════════════ */
+
+@layer base {
+  :root {
+    /* ── Light Mode — Stone Warm Base ── */
+    --background: 60 11% 91%;
+    /* #EAEAE5 — warm off-white */
+    --foreground: 24 10% 10%;
+    /* #1C1917 — stone-900 */
+
+    --card: 0 0% 100%;
+    /* #FFFFFF — white card surface */
+    --card-foreground: 24 10% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 24 10% 10%;
+
+    --primary: 24 10% 10%;
+    /* stone-900 — dominant dark */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 24 4% 83%;
+    /* stone-300 — medium neutral */
+    --secondary-foreground: 24 10% 10%;
+
+    --muted: 60 5% 95%;
+    /* stone-100 */
+    --muted-foreground: 24 5% 45%;
+    /* stone-500 */
+
+    --accent: 60 5% 95%;
+    /* stone-50 — subtle hover bg */
+    --accent-foreground: 24 10% 10%;
+
+    --destructive: 0 84% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 40%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 48%;
+    --warning-foreground: 24 10% 10%;
+
+    --info: 24 5% 45%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 24 4% 83%;
+    /* stone-300 */
+    --input: 24 4% 90%;
+    /* stone-200 */
+    --ring: 24 10% 10%;
+    /* stone-900 focus ring */
+
+    --radius: 0.375rem;
+    /* 6px — square, editorial */
+
+    /* ── Acid Accent Token ── */
+    --acid: 72 100% 50%;
+    /* #CCFF00 */
+    --acid-foreground: 0 0% 0%;
+    /* #000000 */
+
+    /* ── Glass surfaces · Light ── */
+    --glass-high: rgba(255, 255, 255, 0.88);
+    --glass-mid: rgba(255, 255, 255, 0.72);
+    --glass-low: rgba(255, 255, 255, 0.55);
+    --glass-input: rgba(28, 25, 23, 0.04);
+    --glass-border: rgba(255, 255, 255, 0.80);
+    --glass-border-subtle: rgba(28, 25, 23, 0.08);
+
+    /* ── Shadows · Light (clean, no neon) ── */
+    --shadow-xs: 0 1px 2px rgba(28, 25, 23, 0.04);
+    --shadow-sm: 0 1px 3px rgba(28, 25, 23, 0.07), 0 1px 2px rgba(28, 25, 23, 0.04);
+    --shadow-md: 0 4px 8px rgba(28, 25, 23, 0.09), 0 2px 4px rgba(28, 25, 23, 0.05);
+    --shadow-card: 0 2px 8px rgba(28, 25, 23, 0.07), 0 1px 2px rgba(28, 25, 23, 0.04);
+    --sh-1: 0 1px 3px rgba(28, 25, 23, 0.07), 0 1px 2px rgba(28, 25, 23, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    --sh-2: 0 4px 12px rgba(28, 25, 23, 0.10), 0 2px 4px rgba(28, 25, 23, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    --sh-3: 0 8px 24px rgba(28, 25, 23, 0.14), 0 4px 8px rgba(28, 25, 23, 0.08);
+    --glow-primary: 0 4px 20px rgba(28, 25, 23, 0.25);
+    --glow-acid: 0 4px 20px rgba(204, 255, 0, 0.40);
+    --glow-green: 0 0 16px rgba(34, 197, 94, 0.28);
+    --glow-blue: 0 0 16px rgba(28, 25, 23, 0.15);
+    --focus-ring: 0 0 0 3px rgba(28, 25, 23, 0.18);
+
+    /* ── Radius scale · Square/Editorial ── */
+    --r-sm: 4px;
+    --r-md: 6px;
+    --r-lg: 10px;
+    --r-xl: 14px;
+    --r-2xl: 20px;
+
+    /* ── Typography ── */
+    --font-sans: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* ── Sidebar · Light ── */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 24 10% 10%;
+    --sidebar-primary: 24 10% 10%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 60 5% 95%;
+    --sidebar-accent-foreground: 24 10% 10%;
+    --sidebar-border: 24 4% 83%;
+    --sidebar-ring: 24 10% 10%;
+
+    /* ── Charts · Light ── */
+    --chart-1: 24 10% 10%;
+    /* stone-900 */
+    --chart-2: 72 100% 50%;
+    /* acid #CCFF00 */
+    --chart-3: 38 92% 48%;
+    /* amber */
+    --chart-4: 0 84% 55%;
+    /* red */
+    --chart-5: 24 5% 45%;
+    /* stone-500 */
+    --chart-green: 160 55% 40%;
+    /* emerald for revenue/success charts */
+  }
+
+  .dark {
+    /* ── Dark Mode — True Black + Acid Primary ── */
+    --background: 0 0% 0%;
+    /* Pitch Black background */
+    --foreground: 60 4% 95%;
+    /* #FAFAF9 — stone-50 */
+
+    --card: 0 0% 4%;
+    /* Very dark card for contrast */
+    --card-foreground: 60 4% 95%;
+
+    --popover: 0 0% 1%;
+    --popover-foreground: 60 4% 95%;
+
+    --primary: 72 100% 50%;
+    /* #CCFF00 — acid, vibrant CTA in dark */
+    --primary-foreground: 0 0% 0%;
+    /* black text on acid */
+
+    --secondary: 0 0% 10%;
+    /* deep gray area */
+    --secondary-foreground: 60 4% 95%;
+
+    --muted: 0 0% 2%;
+    /* softer muted */
+    --muted-foreground: 24 5% 65%;
+    /* lighter muted text */
+
+    --accent: 0 0% 10%;
+    /* subtle hover bg */
+    --accent-foreground: 60 4% 95%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 24 10% 10%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 24 10% 10%;
+
+    --info: 24 5% 64%;
+    --info-foreground: 24 10% 10%;
+
+    --border: 0 0% 12%;
+    /* dark border */
+    --input: 0 0% 2%;
+    --ring: 72 100% 50%;
+    /* acid focus ring in dark */
+
+    /* ── Glass surfaces · Dark ── */
+    --glass-high: rgba(28, 25, 23, 0.95);
+    --glass-mid: rgba(28, 25, 23, 0.84);
+    --glass-low: rgba(28, 25, 23, 0.44);
+    --glass-input: rgba(255, 255, 255, 0.02);
+    --glass-border: rgba(255, 255, 255, 0.04);
+    --glass-border-subtle: rgba(255, 255, 255, 0.02);
+
+    /* ── Shadows · Dark ── */
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.25);
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.50);
+    --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.40), 0 1px 2px rgba(0, 0, 0, 0.20);
+    --sh-1: 0 1px 3px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --sh-2: 0 4px 16px rgba(0, 0, 0, 0.45), 0 2px 4px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    --sh-3: 0 8px 32px rgba(0, 0, 0, 0.55), 0 4px 8px rgba(0, 0, 0, 0.30);
+    --glow-primary: 0 4px 24px rgba(204, 255, 0, 0.35);
+    --glow-acid: 0 4px 24px rgba(204, 255, 0, 0.40);
+    --glow-green: 0 0 16px rgba(34, 197, 94, 0.22);
+    --glow-blue: 0 0 16px rgba(255, 255, 255, 0.10);
+    --focus-ring: 0 0 0 3px rgba(204, 255, 0, 0.28);
+
+    /* ── Sidebar · Dark ── */
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 60 4% 95%;
+    --sidebar-primary: 72 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 8%;
+    --sidebar-accent-foreground: 60 4% 95%;
+    --sidebar-border: 0 0% 12%;
+    --sidebar-ring: 72 100% 50%;
+
+    /* ── Charts · Dark ── */
+    --chart-1: 72 100% 50%;
+    /* acid — dominant */
+    --chart-2: 60 4% 70%;
+    /* stone-400 */
+    --chart-3: 38 92% 50%;
+    /* amber */
+    --chart-4: 0 84% 60%;
+    /* red */
+    --chart-5: 24 5% 35%;
+    /* stone-600 */
+    --chart-green: 72 100% 50%;
+    /* Acid #CCFF00 for revenue/success charts */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-tap-highlight-color: transparent;
+    /* DS3.0 signature: subtle grid lines background */
+    background-image:
+      linear-gradient(to right, rgba(28, 25, 23, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(28, 25, 23, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-attachment: fixed;
+  }
+
+  .dark body,
+  body:is(.dark *) {
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-semibold tracking-tight text-foreground;
+  }
+
+  h1 {
+    @apply text-2xl md:text-3xl;
+  }
+
+  h2 {
+    @apply text-xl md:text-2xl;
+  }
+
+  h3 {
+    @apply text-lg md:text-xl;
+  }
+
+  /* Prevent zoom on input focus in iOS */
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  @media (min-width: 768px) {
+
+    input,
+    select,
+    textarea {
+      font-size: 14px !important;
+    }
+  }
+}
+
+@layer utilities {
+
+  /* ── Glass utilities ── */
+  .glass {
+    background: var(--glass-mid);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--sh-1);
+  }
+
+  .glass-high {
+    background: var(--glass-high);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--sh-1);
+  }
+
+  .glass-low {
+    background: var(--glass-low);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+  }
+
+  /* ── Acid (neon lime) utilities — DS3.0 signature ── */
+  .bg-acid {
+    background-color: hsl(var(--acid));
+  }
+
+  .text-acid {
+    color: hsl(var(--acid));
+  }
+
+  .border-acid {
+    border-color: hsl(var(--acid));
+  }
+
+  .shadow-acid {
+    box-shadow: var(--glow-acid);
+  }
+
+  /* ── Tinted glass — stone palette ── */
+  .tint-stone {
+    background: rgba(28, 25, 23, 0.06);
+    border: 1px solid rgba(28, 25, 23, 0.12);
+  }
+
+  .tint-acid {
+    background: rgba(204, 255, 0, 0.08);
+    border: 1px solid rgba(204, 255, 0, 0.20);
+  }
+
+  .tint-green {
+    background: rgba(34, 197, 94, 0.08);
+    border: 1px solid rgba(34, 197, 94, 0.15);
+  }
+
+  .tint-blue {
+    background: rgba(28, 25, 23, 0.06);
+    border: 1px solid rgba(28, 25, 23, 0.12);
+  }
+
+  .tint-amber {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+  }
+
+  .tint-red {
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.15);
+  }
+
+  /* ── DS3.0 flashlight / hover glow card effect ── */
+  .flashlight-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .flashlight-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(255, 255, 255, 0.35),
+        transparent 40%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: soft-light;
+  }
+
+  .flashlight-card:hover::before {
+    opacity: 1;
+  }
+
+  /* ── Shadow utilities ── */
+  .shadow-custom-xs {
+    box-shadow: var(--shadow-xs);
+  }
+
+  .shadow-custom-sm {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .shadow-custom-md {
+    box-shadow: var(--shadow-md);
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-sh-1 {
+    box-shadow: var(--sh-1);
+  }
+
+  .shadow-sh-2 {
+    box-shadow: var(--sh-2);
+  }
+
+  .shadow-sh-3 {
+    box-shadow: var(--sh-3);
+  }
+
+  .shadow-glow-primary {
+    box-shadow: var(--glow-primary);
+  }
+
+  .shadow-glow-acid {
+    box-shadow: var(--glow-acid);
+  }
+
+  /* ── Touch optimization ── */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* ── Safe area for mobile ── */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  .safe-top {
+    padding-top: env(safe-area-inset-top, 0);
+  }
+
+  /* ── Animations ── */
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.35s ease-out;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(100%);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shimmer {
+    from {
+      transform: translateX(-100%) skewX(-15deg);
+    }
+
+    to {
+      transform: translateX(200%) skewX(-15deg);
+    }
+  }
+
+  @keyframes spin-beam {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* ── Scrollbar styling — stone palette ── */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(28, 25, 23, 0.18) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(28, 25, 23, 0.18);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(28, 25, 23, 0.30);
+  }
+
+  .dark .scrollbar-thin {
+    scrollbar-color: rgba(255, 255, 255, 0.12) transparent;
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(255, 255, 255, 0.22);
+  }
+
+  /* ── Font utilities ── */
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+}

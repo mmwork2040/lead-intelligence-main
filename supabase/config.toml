@@ -1,0 +1,28 @@
+project_id = "txrgvcpaeavujrmdwxtl"
+
+[functions.webhook-hotmart]
+verify_jwt = false
+
+[functions.webhook-manychat]
+verify_jwt = false
+
+[functions.webhook-n8n]
+verify_jwt = false
+
+[functions.sync-facebook-ads]
+verify_jwt = true
+
+[functions.ai-assistant]
+verify_jwt = false
+
+[functions.webhook-tracking-pixel]
+verify_jwt = false
+
+[functions.unify-leads]
+verify_jwt = true
+
+[functions.test-facebook-connection]
+verify_jwt = true
+
+[functions.toggle-facebook-status]
+verify_jwt = true
