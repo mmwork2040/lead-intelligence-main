@@ -38,16 +38,17 @@ export const useCRMPipeline = (productSlug?: string | null, period?: PeriodFilte
   return useQuery({
     queryKey: ["crm-pipeline", productSlug, period],
     queryFn: async () => {
-      const { startDate, endDate } = period 
-        ? calculateDateRange(period) 
+      const { startDate, endDate } = period
+        ? calculateDateRange(period)
         : { startDate: new Date("2020-01-01"), endDate: new Date() };
 
       let query = supabase
         .from("leads")
-        .select("*")
+        .select("lead_id, name, email, phone, source, crm_status, project_slug, created_at, utm_source")
         .gte("created_at", startDate.toISOString())
         .lte("created_at", endDate.toISOString())
-        .order("created_at", { ascending: false });
+        .order("created_at", { ascending: false })
+        .limit(1000);
 
       const { data, error } = await query;
 

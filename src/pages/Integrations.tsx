@@ -45,7 +45,7 @@ const Integrations = () => {
     }
   }, [fbConfig]);
 
-  const baseUrl = "https://txrgvcpaeavujrmdwxtl.supabase.co/functions/v1";
+  const baseUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1`;
 
   const webhooks = [
     {
@@ -91,6 +91,14 @@ const Integrations = () => {
         variant: "destructive",
       });
       return;
+    }
+
+    // Inform user when the masked token is being kept
+    if (fbForm.accessToken === "••••••••••••••••" && fbConfig?.id) {
+      toast({
+        title: "Token mantido",
+        description: "O Access Token anterior foi mantido. Apenas o Ad Account ID será atualizado.",
+      });
     }
 
     saveConfig({

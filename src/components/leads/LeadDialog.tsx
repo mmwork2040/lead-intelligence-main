@@ -32,13 +32,13 @@ import type { Database } from "@/integrations/supabase/types";
 // Função para formatar telefone visualmente
 function formatPhoneDisplay(value: string): string {
   const digits = value.replace(/\D/g, "");
-  
+
   // Com DDI (55)
   if (digits.startsWith("55") && digits.length > 2) {
     const ddi = digits.slice(0, 2);
     const ddd = digits.slice(2, 4);
     const rest = digits.slice(4);
-    
+
     if (rest.length <= 4) {
       return `+${ddi} (${ddd}) ${rest}`;
     } else if (rest.length <= 8) {
@@ -47,7 +47,7 @@ function formatPhoneDisplay(value: string): string {
       return `+${ddi} (${ddd}) ${rest.slice(0, 5)}-${rest.slice(5, 9)}`;
     }
   }
-  
+
   // Sem DDI (formato brasileiro)
   if (digits.length <= 2) {
     return `(${digits}`;
@@ -63,26 +63,26 @@ function formatPhoneDisplay(value: string): string {
 // Validar se telefone está em formato válido
 function getPhoneValidationStatus(value: string): { valid: boolean; message: string } {
   const digits = value.replace(/\D/g, "");
-  
+
   if (digits.length === 0) {
     return { valid: false, message: "" };
   }
-  
+
   if (digits.length < 10) {
     return { valid: false, message: "Número incompleto" };
   }
-  
+
   if (digits.length > 15) {
     return { valid: false, message: "Número muito longo" };
   }
-  
+
   // Validar DDD brasileiro (11-99)
   const ddd = digits.startsWith("55") ? digits.slice(2, 4) : digits.slice(0, 2);
   const dddNum = parseInt(ddd, 10);
   if (dddNum < 11 || dddNum > 99) {
     return { valid: false, message: "DDD inválido" };
   }
-  
+
   return { valid: true, message: "Telefone válido" };
 }
 
@@ -146,7 +146,7 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
   // Auto-fill address from CEP
   const handleCEPBlur = async () => {
     if (!zipCode || loadingCEP) return;
-    
+
     setLoadingCEP(true);
     const addressData = await fetchAddressByCEP(zipCode);
     setLoadingCEP(false);
@@ -179,17 +179,17 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
         utm_content: lead.utm_content || "",
         utm_term: lead.utm_term || "",
         project_slug: lead.project_slug || "",
-        zip_code: (lead as any).zip_code || "",
-        street: (lead as any).street || "",
-        street_number: (lead as any).street_number || "",
-        complement: (lead as any).complement || "",
-        neighborhood: (lead as any).neighborhood || "",
-        city: (lead as any).city || "",
-        state: (lead as any).state || "",
-        country: (lead as any).country || "Brasil",
-        region: (lead as any).region || "",
-        gender: (lead as any).gender || "",
-        birth_date: (lead as any).birth_date || "",
+        zip_code: lead.zip_code || "",
+        street: lead.street || "",
+        street_number: lead.street_number || "",
+        complement: lead.complement || "",
+        neighborhood: lead.neighborhood || "",
+        city: lead.city || "",
+        state: lead.state || "",
+        country: lead.country || "Brasil",
+        region: lead.region || "",
+        gender: lead.gender || "",
+        birth_date: lead.birth_date || "",
       });
       // Reset tags state
       setSelectedTagIds([]);
@@ -233,7 +233,7 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
         // Get created_at from form if provided
         const createdAtValue = (data as any).created_at;
         const createdAt = createdAtValue ? new Date(createdAtValue).toISOString() : undefined;
-        
+
         await createLead.mutateAsync({
           ...data,
           created_at: createdAt,
@@ -269,9 +269,9 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
                 <Label htmlFor="name" className="flex items-center gap-1">
                   Nome Completo <span className="text-destructive" aria-hidden="true">*</span>
                 </Label>
-                <Input 
-                  id="name" 
-                  {...register("name")} 
+                <Input
+                  id="name"
+                  {...register("name")}
                   placeholder="João Silva"
                   variant={errors.name ? "error" : undefined}
                   aria-invalid={errors.name ? "true" : undefined}
@@ -289,10 +289,10 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
                   <Label htmlFor="email" className="flex items-center gap-1">
                     Email <span className="text-destructive" aria-hidden="true">*</span>
                   </Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    {...register("email")} 
+                  <Input
+                    id="email"
+                    type="email"
+                    {...register("email")}
                     placeholder="joao@email.com"
                     variant={errors.email ? "error" : undefined}
                     aria-invalid={errors.email ? "true" : undefined}
@@ -310,14 +310,14 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
                     Telefone <span className="text-destructive" aria-hidden="true">*</span>
                   </Label>
                   <div className="relative">
-                    <Input 
-                      id="phone" 
+                    <Input
+                      id="phone"
                       {...register("phone", {
                         onChange: (e) => {
                           const formatted = formatPhoneDisplay(e.target.value);
                           e.target.value = formatted;
                         }
-                      })} 
+                      })}
                       placeholder="(11) 99999-9999 ou +55 11 99999-9999"
                       variant={errors.phone ? "error" : undefined}
                       aria-invalid={errors.phone ? "true" : undefined}
@@ -352,9 +352,9 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="cpf">CPF</Label>
-                <Input 
-                  id="cpf" 
-                  {...register("cpf")} 
+                <Input
+                  id="cpf"
+                  {...register("cpf")}
                   placeholder="000.000.000-00"
                   variant={errors.cpf ? "error" : undefined}
                 />
@@ -389,8 +389,8 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="crm_status">Status CRM</Label>
-                <Select 
-                  value={watch("crm_status") || "lead"} 
+                <Select
+                  value={watch("crm_status") || "lead"}
                   onValueChange={(value) => setValue("crm_status", value)}
                 >
                   <SelectTrigger>
@@ -447,8 +447,8 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="project_slug">Campanha Associada</Label>
-                <Select 
-                  value={watch("project_slug") || ""} 
+                <Select
+                  value={watch("project_slug") || ""}
                   onValueChange={(value) => setValue("project_slug", value === "none" ? "" : value)}
                 >
                   <SelectTrigger>
@@ -482,9 +482,9 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
 
               <div className="space-y-2">
                 <Label htmlFor="zip_code">CEP</Label>
-                <Input 
-                  id="zip_code" 
-                  {...register("zip_code")} 
+                <Input
+                  id="zip_code"
+                  {...register("zip_code")}
                   placeholder="00000-000"
                   onBlur={handleCEPBlur}
                   disabled={loadingCEP}
@@ -550,8 +550,8 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="gender">Gênero</Label>
-                  <Select 
-                    value={watch("gender") || ""} 
+                  <Select
+                    value={watch("gender") || ""}
                     onValueChange={(value) => setValue("gender", value as any)}
                   >
                     <SelectTrigger>
@@ -647,10 +647,10 @@ export function LeadDialog({ open, onOpenChange, lead }: LeadDialogProps) {
 
                 <div className="space-y-2">
                   <Label htmlFor="created_at">Data de criação do lead</Label>
-                  <Input 
-                    id="created_at" 
-                    type="datetime-local" 
-                    {...register("created_at" as any)} 
+                  <Input
+                    id="created_at"
+                    type="datetime-local"
+                    {...register("created_at" as any)}
                   />
                   <p className="text-xs text-muted-foreground">
                     Se não preenchido, será usada a data/hora atual

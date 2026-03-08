@@ -209,6 +209,8 @@ serve(async (req) => {
       console.log('Lead updated:', leadId);
     } else {
       // Create new lead
+      const observacoesHotmart = `Produto: ${payload.data.product.name} (ID: ${payload.data.product.id}). Transação: ${payload.data.purchase?.transaction || "N/A"}. Status: ${payload.data.purchase?.status || "N/A"}.`;
+
       const leadInsertData: Record<string, any> = {
         name: buyer.name,
         email: normalizedEmail,
@@ -221,7 +223,11 @@ serve(async (req) => {
         utm_campaign: payload.data.utm?.campaign,
         utm_content: payload.data.utm?.content,
         utm_term: payload.data.utm?.term,
-        metadata: { hotmart_event: payload.event, version: payload.version }
+        metadata: {
+          hotmart_event: payload.event,
+          version: payload.version,
+          observacoes: observacoesHotmart
+        }
       };
 
       // Add address data if available

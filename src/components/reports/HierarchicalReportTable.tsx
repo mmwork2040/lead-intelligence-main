@@ -8,12 +8,96 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { useToggleFacebookStatus } from "@/hooks/useToggleFacebookStatus";
+import { useUpdateFacebookBudget } from "@/hooks/useUpdateFacebookBudget";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Edit2, Check, Loader2 } from "lucide-react";
 import {
   FacebookCampaignHierarchical,
   FacebookAdset,
   FacebookAd,
   FacebookMetrics,
 } from "@/hooks/useFacebookAdsHierarchicalReports";
+
+function BudgetEditor({
+  entityId,
+  entityType,
+  entityName,
+  dailyBudget,
+}: {
+  entityId: string;
+  entityType: "campaign" | "adset";
+  entityName: string;
+  dailyBudget: number | null;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [value, setValue] = useState((dailyBudget || 0) / 100);
+  const updateMutation = useUpdateFacebookBudget();
+
+  const handleSave = () => {
+    updateMutation.mutate(
+      {
+        entityId,
+        entityType,
+        newBudget: value * 100, // envia em centavos para Facebook API
+        entityName,
+      },
+      {
+        onSuccess: () => setIsOpen(false),
+      }
+    );
+  };
+
+  return (
+    <div className="flex items-center ml-2 border-l border-border pl-2" onClick={(e) => e.stopPropagation()}>
+      <span className="text-xs text-muted-foreground mr-1">
+        Orçamento: {dailyBudget ? `R$ ${(dailyBudget / 100).toFixed(2)} / dia` : "Não def."}
+      </span>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-5 w-5 bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground">
+            <Edit2 className="h-3 w-3" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="w-56 p-3 z-50 shadow-sh-2 glass-high border-border" onClick={(e) => e.stopPropagation()}>
+          <div className="space-y-3">
+            <h4 className="font-medium text-sm">Editar Orçamento</h4>
+            <div className="relative">
+              <span className="absolute left-3 top-2.5 text-sm text-muted-foreground">R$</span>
+              <Input
+                type="number"
+                min="0"
+                step="1"
+                className="pl-8 !bg-[var(--glass-input)] h-9 text-sm"
+                value={value}
+                onChange={(e) => setValue(Number(e.target.value))}
+                onKeyDown={(e) => e.key === "Enter" && handleSave()}
+              />
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" size="sm" onClick={() => setIsOpen(false)} className="h-8">
+                Cancelar
+              </Button>
+              <Button size="sm" onClick={handleSave} disabled={updateMutation.isPending} className="h-8 shadow-glow-acid">
+                {updateMutation.isPending ? (
+                  <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                ) : (
+                  <Check className="h-3 w-3 mr-1" />
+                )}
+                Salvar
+              </Button>
+            </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+    </div>
+  );
+}
 
 interface HierarchicalReportTableProps {
   campaigns: FacebookCampaignHierarchical[];
@@ -132,6 +216,12 @@ function CampaignRow({ campaign, selectedMetrics, renderMetrics, toggleMutation 
                       • {campaign.objective}
                     </span>
                   )}
+                  <BudgetEditor
+                    entityId={campaign.campaign_id}
+                    entityType="campaign"
+                    entityName={campaign.campaign_name}
+                    dailyBudget={campaign.daily_budget}
+                  />
                   <div onClick={(e) => e.stopPropagation()} className="ml-auto flex items-center gap-1.5">
                     <span className="text-[10px] text-muted-foreground">{isActive ? "Ativo" : "Pausado"}</span>
                     <Switch
@@ -207,6 +297,12 @@ function AdsetRow({ adset, selectedMetrics, renderMetrics, toggleMutation }: Ads
                       • {adset.optimization_goal}
                     </span>
                   )}
+                  <BudgetEditor
+                    entityId={adset.adset_id}
+                    entityType="adset"
+                    entityName={adset.adset_name}
+                    dailyBudget={adset.daily_budget}
+                  />
                   <div onClick={(e) => e.stopPropagation()} className="ml-auto flex items-center gap-1.5">
                     <span className="text-[10px] text-muted-foreground">{isActive ? "Ativo" : "Pausado"}</span>
                     <Switch

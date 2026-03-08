@@ -91,6 +91,8 @@ serve(async (req) => {
         const existingLead = existingLeads[0];
         leadId = existingLead.lead_id;
 
+        const observacoesPixel = `IP: ${ip_address || 'N/A'}, Device: ${user_agent || 'N/A'}, Event: ${event_type}, Metadata: ${JSON.stringify(metadata)}`;
+
         const updates: any = { updated_at: new Date().toISOString() };
         if (name && !existingLead.name) updates.name = name;
         if (normalizedEmail && !existingLead.email) updates.email = normalizedEmail;
@@ -99,11 +101,22 @@ serve(async (req) => {
         if (utm_source && !existingLead.utm_source) updates.utm_source = utm_source;
         if (project_slug && !existingLead.project_slug) updates.project_slug = project_slug;
 
+        // Append to existing observacoes if needed
+        const existingMetadata = existingLead.metadata || {};
+        updates.metadata = {
+          ...existingMetadata,
+          observacoes: existingMetadata.observacoes
+            ? `${existingMetadata.observacoes}\n[Update Pixel]: ${observacoesPixel}`
+            : observacoesPixel
+        };
+
         if (Object.keys(updates).length > 1) {
           await supabase.from('leads').update(updates).eq('lead_id', leadId);
         }
       } else {
         // Create new lead
+        const observacoesPixel = `IP: ${ip_address || 'N/A'}, Device: ${user_agent || 'N/A'}, Event: ${event_type}, Metadata: ${JSON.stringify(metadata)}`;
+
         const { data: newLead, error: insertError } = await supabase
           .from('leads')
           .insert({
@@ -117,6 +130,10 @@ serve(async (req) => {
             utm_campaign: utm_campaign || null,
             utm_content: utm_content || null,
             utm_term: utm_term || null,
+            metadata: {
+              ...metadata,
+              observacoes: observacoesPixel
+            }
           })
           .select('lead_id')
           .single();

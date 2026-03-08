@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -120,31 +121,61 @@ const Leads = () => {
     );
   };
 
-  const handleExport = () => {
-    if (!leads || leads.length === 0) {
-      return;
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    if (isExporting) return;
+    setIsExporting(true);
+
+    try {
+      // Fetch all leads matching current filters (not just the current page)
+      let query = supabase
+        .from("leads")
+        .select("lead_id, name, email, phone, cpf, source, crm_status, utm_source, utm_campaign, utm_medium, project_slug, city, state, created_at")
+        .order("created_at", { ascending: false })
+        .limit(10000);
+
+      if (filters?.search) {
+        const sanitized = filters.search.replace(/[,.()"\\%*]/g, '');
+        if (sanitized.trim()) {
+          query = query.or(
+            `name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,phone.ilike.%${sanitized}%`
+          );
+        }
+      }
+      if (filters?.source) query = query.eq("source", filters.source);
+      if (filters?.crmStatus) query = query.eq("crm_status", filters.crmStatus);
+      if (filters?.projectSlug) query = query.eq("project_slug", filters.projectSlug);
+      if (filters?.state) query = query.eq("state", filters.state);
+      if (filters?.city) query = query.ilike("city", `%${filters.city}%`);
+      if (filters?.utmSource) query = query.eq("utm_source", filters.utmSource);
+      if (filters?.utmCampaign) query = query.eq("utm_campaign", filters.utmCampaign);
+
+      const { data: allLeads, error } = await query;
+      if (error) throw error;
+      if (!allLeads || allLeads.length === 0) return;
+
+      const exportData = allLeads.map((lead) => ({
+        Nome: lead.name || "",
+        Email: lead.email || "",
+        Telefone: lead.phone || "",
+        CPF: lead.cpf || "",
+        Origem: getSourceLabel(lead.source || ""),
+        "UTM Source": lead.utm_source || "",
+        "UTM Campaign": lead.utm_campaign || "",
+        "UTM Medium": lead.utm_medium || "",
+        Campanha: lead.project_slug || "",
+        Cidade: lead.city || "",
+        Estado: lead.state || "",
+        "Data de Captura": lead.created_at ? new Date(lead.created_at).toLocaleDateString("pt-BR") : "",
+      }));
+
+      exportToCSV(exportData, `leads-${new Date().toISOString().split("T")[0]}`);
+    } catch (err) {
+      console.error("Error exporting leads:", err);
+    } finally {
+      setIsExporting(false);
     }
-
-    const exportData = leads.map((lead) => ({
-      Nome: lead.name || "",
-      Email: lead.email || "",
-      Telefone: lead.phone || "",
-      CPF: lead.cpf || "",
-      Origem: getSourceLabel(lead.source || ""),
-      "Produtos Comprados": lead.products?.map(p => p.name).join(", ") || "",
-      "Valor Total (R$)": lead.totalValue?.toFixed(2) || "0.00",
-      "Total de Compras": lead.totalPurchases || 0,
-      Tags: lead.tags?.map(t => t.name).join(", ") || "",
-      "UTM Source": lead.utm_source || "",
-      "UTM Campaign": lead.utm_campaign || "",
-      "UTM Medium": lead.utm_medium || "",
-      Campanha: lead.project_slug || "",
-      Cidade: lead.city || "",
-      Estado: lead.state || "",
-      "Data de Captura": lead.created_at ? new Date(lead.created_at).toLocaleDateString("pt-BR") : "",
-    }));
-
-    exportToCSV(exportData, `leads-${new Date().toISOString().split("T")[0]}`);
   };
 
   const handleDelete = (lead: LeadWithProducts) => {
@@ -207,9 +238,9 @@ const Leads = () => {
             <p className="text-muted-foreground">Gerencie e acompanhe todos os seus leads</p>
           </div>
           <div className="flex gap-2 flex-wrap">
-            <Button variant="outline" className="gap-2" onClick={handleExport} disabled={!leads || leads.length === 0}>
+            <Button variant="outline" className="gap-2" onClick={handleExport} disabled={isExporting || !leads || leads.length === 0}>
               <Download className="w-4 h-4" />
-              Exportar
+              {isExporting ? "Exportando..." : "Exportar"}
             </Button>
             <Button variant="outline" className="gap-2" onClick={() => setImportDialogOpen(true)}>
               <Upload className="w-4 h-4" />
@@ -314,7 +345,7 @@ const Leads = () => {
           <div className="space-y-3">
             {leads.map((lead) => (
               <LeadCard
-                key={lead.id}
+                key={lead.lead_id}
                 lead={lead}
                 isSelected={selectedLeadIds.includes(lead.lead_id)}
                 onSelect={handleSelectLead}

@@ -68,15 +68,15 @@ export const useLeads = (filters?: LeadsFilters, pagination?: { page: number; pa
       const [productFilterResult, tagFilterResult] = await Promise.all([
         filters?.productSlug
           ? supabase
-              .from("purchases")
-              .select("lead_id")
-              .eq("product_slug", filters.productSlug)
+            .from("purchases")
+            .select("lead_id")
+            .eq("product_slug", filters.productSlug)
           : Promise.resolve({ data: null }),
         filters?.tagIds && filters.tagIds.length > 0
           ? supabase
-              .from("lead_tags")
-              .select("lead_id")
-              .in("tag_id", filters.tagIds)
+            .from("lead_tags")
+            .select("lead_id")
+            .in("tag_id", filters.tagIds)
           : Promise.resolve({ data: null }),
       ]);
 
@@ -93,11 +93,14 @@ export const useLeads = (filters?: LeadsFilters, pagination?: { page: number; pa
         .select("*", { count: "exact" })
         .order("created_at", { ascending: false });
 
-      // Search filter
+      // Search filter (sanitized to prevent PostgREST filter injection)
       if (filters?.search) {
-        query = query.or(
-          `name.ilike.%${filters.search}%,email.ilike.%${filters.search}%,phone.ilike.%${filters.search}%`
-        );
+        const sanitized = filters.search.replace(/[,.()"\\%*]/g, '');
+        if (sanitized.trim()) {
+          query = query.or(
+            `name.ilike.%${sanitized}%,email.ilike.%${sanitized}%,phone.ilike.%${sanitized}%`
+          );
+        }
       }
 
       // Source filter
@@ -150,9 +153,9 @@ export const useLeads = (filters?: LeadsFilters, pagination?: { page: number; pa
           .from("purchases")
           .select("lead_id")
           .eq("status", "approved");
-        
+
         const purchaseLeadIds = new Set(leadsWithPurchases?.map(p => p.lead_id) || []);
-        
+
         if (filters?.hasPurchase && purchaseLeadIds.size > 0) {
           query = query.in("lead_id", Array.from(purchaseLeadIds));
         } else if (filters?.noPurchase) {
@@ -199,7 +202,7 @@ export const useLeads = (filters?: LeadsFilters, pagination?: { page: number; pa
       // ========== STEP 3: Batch fetch products and tags for all leads in one query ==========
       if (results.length > 0) {
         const leadIds = results.map(lead => lead.lead_id);
-        
+
         // Fetch products and tags in parallel
         const [purchasesResult, tagsResult] = await Promise.all([
           supabase
@@ -221,7 +224,7 @@ export const useLeads = (filters?: LeadsFilters, pagination?: { page: number; pa
         const seenProducts: Record<string, Set<string>> = {};
         const valueByLead: Record<string, number> = {};
         const countByLead: Record<string, number> = {};
-        
+
         purchases?.forEach(p => {
           if (!productsByLead[p.lead_id]) {
             productsByLead[p.lead_id] = [];
@@ -232,7 +235,7 @@ export const useLeads = (filters?: LeadsFilters, pagination?: { page: number; pa
           // Sum values and count
           valueByLead[p.lead_id] += p.value || 0;
           countByLead[p.lead_id] += 1;
-          
+
           // Avoid duplicates using Set for product names
           if (!seenProducts[p.lead_id].has(p.product_name)) {
             seenProducts[p.lead_id].add(p.product_name);
@@ -275,9 +278,9 @@ export const useLeads = (filters?: LeadsFilters, pagination?: { page: number; pa
       }
 
       return {
-        data: results.map(lead => ({ 
-          ...lead, 
-          products: [], 
+        data: results.map(lead => ({
+          ...lead,
+          products: [],
           tags: [],
           totalValue: 0,
           totalPurchases: 0,
@@ -329,7 +332,7 @@ export const useCreateLead = () => {
   return useMutation({
     mutationFn: async (input: CreateLeadInput) => {
       const { tags, newTags, ...lead } = input;
-      
+
       const { data, error } = await supabase.from("leads").insert(lead).select().single();
 
       if (error) throw error;
@@ -355,7 +358,7 @@ export const useCreateLead = () => {
             .insert({ name: tagName, source: "manual" })
             .select()
             .single();
-          
+
           if (!tagError && tagData) {
             createdTagIds.push(tagData.id);
           }
@@ -411,8 +414,8 @@ export const useUpdateLead = () => {
             .order("version_number", { ascending: false })
             .limit(1);
 
-          const nextVersion = existingVersions && existingVersions.length > 0 
-            ? ((existingVersions[0] as any).version_number || 0) + 1 
+          const nextVersion = existingVersions && existingVersions.length > 0
+            ? ((existingVersions[0] as any).version_number || 0) + 1
             : 1;
 
           const { data: session } = await supabase.auth.getSession();
@@ -478,14 +481,23 @@ export const useDeleteLead = () => {
   return useMutation({
     mutationFn: async (leadId: string) => {
       // Delete related data first to avoid FK constraint errors
-      await Promise.all([
+      // Using allSettled so partial failures don't abort the entire deletion
+      const results = await Promise.allSettled([
         supabase.from("lead_events").delete().eq("lead_id", leadId),
         supabase.from("lead_tags").delete().eq("lead_id", leadId),
         supabase.from("survey_responses").delete().eq("lead_id", leadId),
         supabase.from("invoice_requests").delete().eq("lead_id", leadId),
         supabase.from("purchases").delete().eq("lead_id", leadId),
         supabase.from("lead_merge_logs").delete().eq("master_lead_id", leadId),
+        supabase.from("lead_versions").delete().eq("lead_id", leadId),
       ]);
+
+      // Log any partial failures for debugging
+      results.forEach((result, index) => {
+        if (result.status === "rejected") {
+          console.warn(`Lead deletion: cleanup step ${index} failed:`, result.reason);
+        }
+      });
 
       // Now delete the lead
       const { error } = await supabase.from("leads").delete().eq("lead_id", leadId);

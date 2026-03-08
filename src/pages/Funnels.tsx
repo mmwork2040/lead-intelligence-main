@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 import {
     Table,
     TableBody,
@@ -24,6 +25,27 @@ import { Plus, Workflow, Settings, Trash2, Edit } from "lucide-react";
 
 export default function Funnels() {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
+    const handleDeleteFunnel = async (e: React.MouseEvent, funnelId: string) => {
+        e.stopPropagation();
+        if (!confirm("Tem certeza que deseja excluir este funil? Todos os passos serão removidos.")) return;
+
+        try {
+            // Delete child steps first (FK constraint)
+            // @ts-ignore
+            await supabase.from('funnel_steps').delete().eq('funnel_id', funnelId);
+            // @ts-ignore
+            const { error } = await supabase.from('funnels').delete().eq('id', funnelId);
+            if (error) throw error;
+
+            toast.success("Funil excluído com sucesso!");
+            queryClient.invalidateQueries({ queryKey: ["funnels"] });
+        } catch (err) {
+            console.error("Error deleting funnel:", err);
+            toast.error("Erro ao excluir funil.");
+        }
+    };
 
     // Fetch funnels
     const { data: funnels, isLoading } = useQuery({
@@ -124,7 +146,7 @@ export default function Funnels() {
                                                     <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-primary" onClick={(e) => { e.stopPropagation(); navigate(`/funnels/${funnel.id}`); }}>
                                                         <Edit className="h-4 w-4" />
                                                     </Button>
-                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={(e) => { e.stopPropagation(); /* TODO: Delete */ }}>
+                                                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive" onClick={(e) => handleDeleteFunnel(e, funnel.id)}>
                                                         <Trash2 className="h-4 w-4" />
                                                     </Button>
                                                 </div>

@@ -23,6 +23,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let isMounted = true;
 
+    let hasShownLoginToast = false;
+
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -31,7 +33,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setUser(session?.user ?? null);
         setIsLoading(false);
 
-        if (event === 'SIGNED_IN') {
+        if (event === 'SIGNED_IN' && !hasShownLoginToast) {
+          hasShownLoginToast = true;
           toast({
             title: "Login realizado com sucesso!",
             description: "Bem-vindo de volta.",
@@ -52,12 +55,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isMounted = false;
       subscription.unsubscribe();
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const signUp = async (email: string, password: string) => {
     const redirectUrl = `${window.location.origin}/auth/callback`;
-    
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,

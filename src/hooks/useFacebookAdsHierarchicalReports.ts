@@ -29,6 +29,7 @@ export interface FacebookAdset {
   adset_name: string;
   status: string | null;
   optimization_goal: string | null;
+  daily_budget: number | null;
   metrics: FacebookMetrics;
   ads: FacebookAd[];
 }
@@ -38,6 +39,7 @@ export interface FacebookCampaignHierarchical {
   campaign_name: string;
   status: string | null;
   objective: string | null;
+  daily_budget: number | null;
   metrics: FacebookMetrics;
   adsets: FacebookAdset[];
 }
@@ -62,14 +64,14 @@ export function useFacebookAdsHierarchicalReports(
   return useQuery({
     queryKey: ["facebook-ads-hierarchical-reports", period, filters],
     queryFn: async (): Promise<HierarchicalReportData> => {
-      const { startDate, endDate } = period 
-        ? calculateDateRange(period) 
+      const { startDate, endDate } = period
+        ? calculateDateRange(period)
         : { startDate: new Date("2020-01-01"), endDate: new Date() };
 
       // 1. Fetch campaigns with optional status filter
       let campaignsQuery = supabase
         .from("fb_campaigns")
-        .select("fb_campaign_id, name, status, objective");
+        .select("fb_campaign_id, name, status, objective, daily_budget");
 
       // Apply status filter
       if (filters?.status && filters.status !== "ALL") {
@@ -97,7 +99,7 @@ export function useFacebookAdsHierarchicalReports(
       // 2. Fetch adsets for these campaigns
       let adsetsQuery = supabase
         .from("fb_adsets")
-        .select("fb_adset_id, fb_campaign_id, name, status, optimization_goal")
+        .select("fb_adset_id, fb_campaign_id, name, status, optimization_goal, daily_budget")
         .in("fb_campaign_id", campaignIds);
 
       // Apply specific adset filter
@@ -165,6 +167,7 @@ export function useFacebookAdsHierarchicalReports(
           campaign_name: campaign.name,
           status: campaign.status,
           objective: campaign.objective,
+          daily_budget: campaign.daily_budget,
           metrics: createEmptyMetrics(),
           adsets: [],
         });
@@ -177,6 +180,7 @@ export function useFacebookAdsHierarchicalReports(
           adset_name: adset.name,
           status: adset.status,
           optimization_goal: adset.optimization_goal,
+          daily_budget: adset.daily_budget,
           metrics: createEmptyMetrics(),
           ads: [],
         });

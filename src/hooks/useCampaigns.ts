@@ -53,7 +53,7 @@ export const useCampaignCounts = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("campaigns")
-        .select("*");
+        .select("id, is_active");
 
       if (error) throw error;
 
@@ -76,7 +76,7 @@ export const useToggleCampaignStatus = () => {
     mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
       const { data, error } = await supabase
         .from("campaigns")
-        .update({ is_active } as any)
+        .update({ is_active } as any) // is_active added via migration, not yet in generated types
         .eq("id", id)
         .select()
         .single();

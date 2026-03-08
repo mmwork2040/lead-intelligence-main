@@ -100,14 +100,34 @@ serve(async (req) => {
     if (existingLeads && existingLeads.length > 0) {
       // Update existing lead
       leadId = existingLeads[0].lead_id;
-      
-      const updateData: Record<string, string> = {
+
+      const updateData: Record<string, string | object> = {
         updated_at: new Date().toISOString()
       };
 
       if (fullName) updateData.name = fullName;
       if (subscriber.email) updateData.email = subscriber.email;
       if (phone) updateData.phone = phone;
+
+      // Handle updating observacoes for existing too
+      let observacoesManychat = ``;
+      if (payload.tags && payload.tags.length > 0) {
+        observacoesManychat += `Tags: ${payload.tags.join(', ')}. `;
+      }
+      if (payload.custom_fields && Object.keys(payload.custom_fields).length > 0) {
+        observacoesManychat += `Custom Fields: ${JSON.stringify(payload.custom_fields)}.`;
+      }
+
+      if (observacoesManychat) {
+        // Keep existing metadata if possible
+        const existingMetadata = existingLeads[0].metadata || {};
+        updateData.metadata = {
+          ...existingMetadata,
+          observacoes: existingMetadata.observacoes
+            ? `${existingMetadata.observacoes}\n[Update Manychat]: ${observacoesManychat}`
+            : observacoesManychat
+        }
+      }
 
       await supabase
         .from('leads')
@@ -117,6 +137,14 @@ serve(async (req) => {
       console.log('Lead updated:', leadId);
     } else {
       // Create new lead
+      let observacoesManychat = ``;
+      if (payload.tags && payload.tags.length > 0) {
+        observacoesManychat += `Tags: ${payload.tags.join(', ')}. `;
+      }
+      if (payload.custom_fields && Object.keys(payload.custom_fields).length > 0) {
+        observacoesManychat += `Custom Fields: ${JSON.stringify(payload.custom_fields)}.`;
+      }
+
       const { data: newLead, error: leadError } = await supabase
         .from('leads')
         .insert({
@@ -128,11 +156,12 @@ serve(async (req) => {
           utm_source: payload.utm?.source,
           utm_medium: payload.utm?.medium,
           utm_campaign: payload.utm?.campaign,
-          metadata: { 
+          metadata: {
             manychat_event: payload.event,
             manychat_subscriber_id: subscriber.id,
             tags: payload.tags,
-            custom_fields: payload.custom_fields
+            custom_fields: payload.custom_fields,
+            observacoes: observacoesManychat
           }
         })
         .select('lead_id')
@@ -176,7 +205,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error processing ManyChat webhook:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    
+
     return new Response(
       JSON.stringify({ success: false, error: errorMessage }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }

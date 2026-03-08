@@ -101,7 +101,7 @@ serve(async (req) => {
       // Update existing lead
       leadId = existingLeads[0].lead_id;
 
-      const updateData: Record<string, string> = {
+      const updateData: Record<string, string | object> = {
         updated_at: new Date().toISOString()
       };
 
@@ -109,6 +109,18 @@ serve(async (req) => {
       if (lead.email) updateData.email = lead.email;
       if (lead.phone) updateData.phone = lead.phone;
       if (lead.cpf) updateData.cpf = lead.cpf;
+
+      // Handle updating observacoes for existing
+      const observacoesN8n = payload.metadata ? `Dados extras: ${JSON.stringify(payload.metadata)}` : '';
+      if (observacoesN8n) {
+        const existingMetadata = existingLeads[0].metadata || {};
+        updateData.metadata = {
+          ...existingMetadata,
+          observacoes: existingMetadata.observacoes
+            ? `${existingMetadata.observacoes}\n[Update n8n]: ${observacoesN8n}`
+            : observacoesN8n
+        }
+      }
 
       await supabase
         .from('leads')
@@ -120,6 +132,8 @@ serve(async (req) => {
 
     if (!leadId) {
       // Create new lead
+      const observacoesN8n = payload.metadata ? `Dados extras: ${JSON.stringify(payload.metadata)}` : '';
+
       const { data: newLead, error: leadError } = await supabase
         .from('leads')
         .insert({
@@ -134,7 +148,10 @@ serve(async (req) => {
           utm_content: payload.utm?.content,
           utm_term: payload.utm?.term,
           project_slug: payload.project_slug,
-          metadata: payload.metadata || {}
+          metadata: {
+            ...payload.metadata,
+            observacoes: observacoesN8n
+          }
         })
         .select('lead_id')
         .single();
@@ -173,7 +190,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error processing N8N webhook:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    
+
     return new Response(
       JSON.stringify({ success: false, error: errorMessage }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
