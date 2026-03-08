@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 
 export interface FacebookAdsConfig {
   id: string;
@@ -43,7 +44,7 @@ export const useSaveFacebookAdsConfig = () => {
     }) => {
       if (existingConfigId) {
         const updateData: Record<string, string> = { ad_account_id: adAccountId };
-        
+
         if (accessToken !== "••••••••••••••••") {
           updateData.access_token = accessToken;
         }
@@ -58,13 +59,15 @@ export const useSaveFacebookAdsConfig = () => {
         if (error) throw error;
         return data;
       } else {
+        const user_id = await getCurrentUserId();
         const { data, error } = await supabase
           .from("fb_ads_config")
           .insert({
             access_token: accessToken,
             ad_account_id: adAccountId,
             is_active: true,
-          })
+            user_id,
+          } as any)
           .select()
           .single();
 
@@ -75,12 +78,12 @@ export const useSaveFacebookAdsConfig = () => {
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["fb-ads-config"] });
       toast.success("Configuração salva! Sincronizando dados do Facebook...");
-      
+
       // Auto-sync after saving config
       try {
         const { error } = await supabase.functions.invoke("sync-facebook-ads");
         if (error) throw error;
-        
+
         toast.success("Dados do Facebook sincronizados com sucesso!");
         queryClient.invalidateQueries({ queryKey: ["facebook-ads-hierarchical-reports"] });
         queryClient.invalidateQueries({ queryKey: ["facebook-campaigns"] });
@@ -108,12 +111,12 @@ export const useTestFacebookConnection = () => {
       });
 
       if (error) throw error;
-      
+
       // Check if the response indicates failure
       if (data && !data.success) {
         throw new Error(data.message || data.error || "Teste de conexão falhou");
       }
-      
+
       return data;
     },
     onSuccess: (data) => {
@@ -127,7 +130,7 @@ export const useTestFacebookConnection = () => {
     onError: (error: any) => {
       console.error("Error testing connection:", error);
       const errorMsg = error.message || "Erro desconhecido";
-      
+
       // Check if it's a permission error
       if (errorMsg.includes("permissões") || errorMsg.includes("permission")) {
         toast.error("❌ Token sem permissões necessárias", {
@@ -157,13 +160,13 @@ export const useSyncFacebookAds = () => {
   return useMutation({
     mutationFn: async (options?: SyncOptions) => {
       const syncOptions = options || { syncMode: "quick" };
-      
+
       const { data, error } = await supabase.functions.invoke("sync-facebook-ads", {
         body: syncOptions,
       });
 
       if (error) throw error;
-      
+
       // Check if the response indicates an error
       if (data && !data.success) {
         const err = new Error(data.error || "Erro ao sincronizar");
@@ -171,7 +174,7 @@ export const useSyncFacebookAds = () => {
         (err as any).code = data.code;
         throw err;
       }
-      
+
       return data;
     },
     onSuccess: (data) => {
@@ -181,10 +184,10 @@ export const useSyncFacebookAds = () => {
       queryClient.invalidateQueries({ queryKey: ["facebook-adsets"] });
       queryClient.invalidateQueries({ queryKey: ["facebook-ads"] });
       queryClient.invalidateQueries({ queryKey: ["facebook-metrics"] });
-      
+
       const mode = data?.sync_mode === "full" ? "completa" : "rápida";
       const duration = data?.duration_seconds ? ` em ${data.duration_seconds}s` : "";
-      
+
       toast.success(`Sincronização ${mode} concluída${duration}!`, {
         description: `${data?.campaigns_synced || 0} campanhas, ${data?.adsets_synced || 0} conjuntos, ${data?.insights_synced || 0} métricas`,
       });
@@ -192,7 +195,7 @@ export const useSyncFacebookAds = () => {
     onError: (error: any) => {
       console.error("Error syncing:", error);
       const errorMsg = error.message || "Erro desconhecido";
-      
+
       if (error.isExpired || errorMsg.toLowerCase().includes("expired") || errorMsg.toLowerCase().includes("expirado")) {
         toast.error("Token do Facebook expirado", {
           description: "Atualize o token na página de Integrações",

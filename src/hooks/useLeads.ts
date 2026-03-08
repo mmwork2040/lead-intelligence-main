@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { PeriodFilter, calculateDateRange } from "@/lib/dateUtils";
@@ -332,8 +333,9 @@ export const useCreateLead = () => {
   return useMutation({
     mutationFn: async (input: CreateLeadInput) => {
       const { tags, newTags, ...lead } = input;
+      const user_id = await getCurrentUserId();
 
-      const { data, error } = await supabase.from("leads").insert(lead).select().single();
+      const { data, error } = await supabase.from("leads").insert({ ...lead, user_id }).select().single();
 
       if (error) throw error;
 
@@ -347,6 +349,7 @@ export const useCreateLead = () => {
           email: lead.email,
           phone: lead.phone,
         },
+        user_id,
       });
 
       // Create new tags if any
@@ -355,7 +358,7 @@ export const useCreateLead = () => {
         for (const tagName of newTags) {
           const { data: tagData, error: tagError } = await supabase
             .from("tags")
-            .insert({ name: tagName, source: "manual" })
+            .insert({ name: tagName, source: "manual", user_id })
             .select()
             .single();
 
@@ -372,6 +375,7 @@ export const useCreateLead = () => {
           lead_id: data.lead_id,
           tag_id: tagId,
           source: "manual",
+          user_id,
         }));
 
         await supabase.from("lead_tags").insert(tagAssociations);

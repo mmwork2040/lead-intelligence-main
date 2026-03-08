@@ -31,9 +31,9 @@ const Auth = () => {
   const emailConfirmed = searchParams.get("confirmed") === "true";
   const confirmationError = searchParams.get("error") === "confirmation_failed";
   const inviteToken = searchParams.get("invite");
-  
+
   const { data: invitation, isLoading: inviteLoading } = useValidateInvitation(inviteToken);
-  
+
   const initialTab = inviteToken ? "signup" : "login";
   const [activeTab, setActiveTab] = useState(initialTab);
 
@@ -150,7 +150,7 @@ const Auth = () => {
               </div>
             )}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 rounded-xl">
+              <TabsList className={`grid w-full ${inviteToken ? 'grid-cols-2' : 'grid-cols-1'} bg-muted/50 p-1 rounded-xl`}>
                 <TabsTrigger
                   value="login"
                   className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:glow-sm"
@@ -158,13 +158,15 @@ const Auth = () => {
                 >
                   Login
                 </TabsTrigger>
-                <TabsTrigger
-                  value="signup"
-                  className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:glow-sm"
-                  onClick={() => setSignupError(null)}
-                >
-                  Cadastro
-                </TabsTrigger>
+                {inviteToken && (
+                  <TabsTrigger
+                    value="signup"
+                    className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:glow-sm"
+                    onClick={() => setSignupError(null)}
+                  >
+                    Cadastro
+                  </TabsTrigger>
+                )}
               </TabsList>
 
               <TabsContent value="login">
@@ -238,104 +240,104 @@ const Auth = () => {
                     </Button>
                   </div>
                 ) : (
-                <form onSubmit={handleSignUp} className="space-y-4 mt-6">
-                  {/* Error Alert */}
-                  {signupError && (
-                    <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm animate-in slide-in-from-top-2 duration-200">
-                      <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                      <span>{signupError}</span>
-                    </div>
-                  )}
+                  <form onSubmit={handleSignUp} className="space-y-4 mt-6">
+                    {/* Error Alert */}
+                    {signupError && (
+                      <div className="flex items-center gap-2 p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm animate-in slide-in-from-top-2 duration-200">
+                        <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                        <span>{signupError}</span>
+                      </div>
+                    )}
 
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-email">Email</Label>
-                    <Input
-                      id="signup-email"
-                      name="email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      required
-                      disabled={isLoading || !!(invitation?.email)}
-                      variant="glow"
-                      defaultValue={invitation?.email || ""}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-password">Senha</Label>
-                    <Input
-                      id="signup-password"
-                      name="password"
-                      type="password"
-                      placeholder="••••••••"
-                      required
-                      minLength={6}
-                      disabled={isLoading}
-                      variant="glow"
-                      value={signupPassword}
-                      onChange={(e) => {
-                        setSignupPassword(e.target.value);
-                        setSignupError(null);
-                      }}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Mínimo de 6 caracteres
-                    </p>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="signup-confirm">Confirmar Senha</Label>
-                    <div className="relative">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">Email</Label>
                       <Input
-                        id="signup-confirm"
-                        name="confirmPassword"
+                        id="signup-email"
+                        name="email"
+                        type="email"
+                        placeholder="seu@email.com"
+                        required
+                        disabled={isLoading || !!(invitation?.email)}
+                        variant="glow"
+                        defaultValue={invitation?.email || ""}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password">Senha</Label>
+                      <Input
+                        id="signup-password"
+                        name="password"
                         type="password"
                         placeholder="••••••••"
                         required
                         minLength={6}
                         disabled={isLoading}
                         variant="glow"
-                        value={confirmPassword}
+                        value={signupPassword}
                         onChange={(e) => {
-                          setConfirmPassword(e.target.value);
+                          setSignupPassword(e.target.value);
                           setSignupError(null);
                         }}
-                        className={cn(
-                          "pr-10",
-                          passwordsMatch && "border-[hsl(160,55%,40%)]/50 dark:border-[#CCFF00]/50 focus:border-[hsl(160,55%,40%)] dark:focus:border-[#CCFF00]",
-                          passwordsDontMatch && "border-destructive/50"
-                        )}
                       />
-                      {/* Password match indicator */}
-                      {confirmPassword.length > 0 && (
-                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                          {passwordsMatch ? (
-                            <CheckCircle2 className="h-5 w-5 text-[hsl(160,55%,40%)] dark:text-[#CCFF00]" />
-                          ) : (
-                            <XCircle className="h-5 w-5 text-destructive" />
+                      <p className="text-xs text-muted-foreground">
+                        Mínimo de 6 caracteres
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-confirm">Confirmar Senha</Label>
+                      <div className="relative">
+                        <Input
+                          id="signup-confirm"
+                          name="confirmPassword"
+                          type="password"
+                          placeholder="••••••••"
+                          required
+                          minLength={6}
+                          disabled={isLoading}
+                          variant="glow"
+                          value={confirmPassword}
+                          onChange={(e) => {
+                            setConfirmPassword(e.target.value);
+                            setSignupError(null);
+                          }}
+                          className={cn(
+                            "pr-10",
+                            passwordsMatch && "border-[hsl(160,55%,40%)]/50 dark:border-[#CCFF00]/50 focus:border-[hsl(160,55%,40%)] dark:focus:border-[#CCFF00]",
+                            passwordsDontMatch && "border-destructive/50"
                           )}
-                        </div>
+                        />
+                        {/* Password match indicator */}
+                        {confirmPassword.length > 0 && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {passwordsMatch ? (
+                              <CheckCircle2 className="h-5 w-5 text-[hsl(160,55%,40%)] dark:text-[#CCFF00]" />
+                            ) : (
+                              <XCircle className="h-5 w-5 text-destructive" />
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {passwordsDontMatch && (
+                        <p className="text-xs text-destructive flex items-center gap-1">
+                          <XCircle className="h-3 w-3" />
+                          As senhas não coincidem
+                        </p>
+                      )}
+                      {passwordsMatch && (
+                        <p className="text-xs text-[hsl(160,55%,40%)] dark:text-[#CCFF00] flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Senhas coincidem
+                        </p>
                       )}
                     </div>
-                    {passwordsDontMatch && (
-                      <p className="text-xs text-destructive flex items-center gap-1">
-                        <XCircle className="h-3 w-3" />
-                        As senhas não coincidem
-                      </p>
-                    )}
-                    {passwordsMatch && (
-                      <p className="text-xs text-[hsl(160,55%,40%)] dark:text-[#CCFF00] flex items-center gap-1">
-                        <CheckCircle2 className="h-3 w-3" />
-                        Senhas coincidem
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading || passwordsDontMatch}
-                  >
-                    {isLoading ? "Criando conta..." : "Criar conta"}
-                  </Button>
-                </form>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={isLoading || passwordsDontMatch}
+                    >
+                      {isLoading ? "Criando conta..." : "Criar conta"}
+                    </Button>
+                  </form>
                 )}
               </TabsContent>
             </Tabs>

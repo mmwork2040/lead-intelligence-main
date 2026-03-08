@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsDemo } from "@/contexts/DemoContext";
@@ -197,9 +198,10 @@ export const useCreateCampaign = () => {
 
   return useMutation({
     mutationFn: async (campaign: CampaignInsert) => {
+      const user_id = await getCurrentUserId();
       const { data, error } = await supabase
         .from("campaigns")
-        .insert(campaign)
+        .insert({ ...campaign, user_id } as any)
         .select()
         .single();
 

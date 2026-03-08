@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 
 export interface Goal {
   id: string;
@@ -104,7 +105,7 @@ async function calculateCurrentValue(
           .gte("purchase_date", startDate)
           .lte("purchase_date", endDate)
           .eq("leads.project_slug", campaignId);
-        
+
         return purchases?.length || 0;
       }
 
@@ -162,6 +163,7 @@ export const useCreateGoal = () => {
       campaign_id?: string;
       product_slug?: string;
     }) => {
+      const user_id = await getCurrentUserId();
       const { data, error } = await supabase
         .from("goals")
         .insert([{
@@ -175,7 +177,8 @@ export const useCreateGoal = () => {
           campaign_id: newGoal.campaign_id || null,
           product_slug: newGoal.product_slug || null,
           status: 'active',
-        }])
+          user_id,
+        } as any])
         .select()
         .single();
 

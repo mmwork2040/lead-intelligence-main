@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 
 export interface CampaignGoal {
   id: string;
@@ -138,6 +139,7 @@ export const useCreateCampaignGoal = () => {
       };
       const name = `Meta de ${metricNames[newGoal.metric_type as keyof typeof metricNames]}`;
 
+      const user_id = await getCurrentUserId();
       const { data, error } = await supabase
         .from("goals")
         .insert([{
@@ -150,7 +152,8 @@ export const useCreateCampaignGoal = () => {
           end_date: newGoal.end_date,
           period_type: "monthly",
           status: "active",
-        }])
+          user_id,
+        } as any])
         .select()
         .single();
 

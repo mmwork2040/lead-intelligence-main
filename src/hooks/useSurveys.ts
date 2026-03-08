@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 
 export interface Survey {
   id: string;
@@ -33,6 +34,7 @@ export const useCreateSurvey = () => {
 
   return useMutation({
     mutationFn: async (newSurvey: { name: string; description?: string | null; campaign_id?: string | null; questions?: any[] }) => {
+      const user_id = await getCurrentUserId();
       const { data, error } = await supabase
         .from("surveys")
         .insert([{
@@ -40,7 +42,8 @@ export const useCreateSurvey = () => {
           description: newSurvey.description,
           campaign_id: newSurvey.campaign_id,
           questions: newSurvey.questions || [],
-        }])
+          user_id,
+        } as any])
         .select()
         .single();
 

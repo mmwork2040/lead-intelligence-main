@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 import type { Database } from "@/integrations/supabase/types";
 
 type InvoiceRequest = Database["public"]["Tables"]["invoice_requests"]["Row"];
@@ -76,14 +77,14 @@ export const useInvoiceRequests = (filters?: {
           const purchaseDate = req.purchases?.purchase_date;
           if (!purchaseDate) return false;
           const date = new Date(purchaseDate);
-          
+
           if (filters.startDate && date < new Date(filters.startDate)) return false;
           if (filters.endDate) {
             const endOfDay = new Date(filters.endDate);
             endOfDay.setHours(23, 59, 59, 999);
             if (date > endOfDay) return false;
           }
-          
+
           return true;
         });
       }
@@ -105,9 +106,10 @@ export const useCreateInvoiceRequest = () => {
 
   return useMutation({
     mutationFn: async (invoiceRequest: InvoiceRequestInsert) => {
+      const user_id = await getCurrentUserId();
       const { data, error } = await supabase
         .from("invoice_requests")
-        .insert(invoiceRequest)
+        .insert({ ...invoiceRequest, user_id } as any)
         .select()
         .single();
 

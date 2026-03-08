@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 import type { Database } from "@/integrations/supabase/types";
 
 type Tag = Database["public"]["Tables"]["tags"]["Row"];
@@ -26,9 +27,10 @@ export const useCreateTag = () => {
 
   return useMutation({
     mutationFn: async (tag: TagInsert) => {
+      const user_id = await getCurrentUserId();
       const { data, error } = await supabase
         .from("tags")
-        .insert(tag)
+        .insert({ ...tag, user_id })
         .select()
         .single();
 
@@ -67,9 +69,10 @@ export const useAddTagToLead = () => {
 
   return useMutation({
     mutationFn: async ({ leadId, tagId, source }: { leadId: string; tagId: string; source?: string }) => {
+      const user_id = await getCurrentUserId();
       const { data, error } = await supabase
         .from("lead_tags")
-        .insert({ lead_id: leadId, tag_id: tagId, source: source || "manual" })
+        .insert({ lead_id: leadId, tag_id: tagId, source: source || "manual", user_id })
         .select()
         .single();
 

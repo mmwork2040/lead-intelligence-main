@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 import type { Database } from "@/integrations/supabase/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsDemo } from "@/contexts/DemoContext";
@@ -53,9 +54,10 @@ export const useCreateProduct = () => {
 
   return useMutation({
     mutationFn: async (product: ProductInsert) => {
+      const user_id = await getCurrentUserId();
       const { data, error } = await supabase
         .from("products")
-        .insert(product)
+        .insert({ ...product, user_id } as any)
         .select()
         .single();
 

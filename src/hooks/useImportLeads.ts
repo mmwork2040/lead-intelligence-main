@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 import type { Database } from "@/integrations/supabase/types";
 import { getRegionByState } from "@/lib/cep";
 import { slugify } from "@/lib/utils/slugify";
@@ -53,6 +54,8 @@ export const useImportLeads = () => {
       // Cache de produtos para evitar múltiplas consultas
       const productCache: Record<string, string> = {}; // product_name -> product_slug
 
+      const user_id = await getCurrentUserId();
+
       // Criar log de importação
       const { data: importLog, error: logError } = await supabase
         .from("import_logs")
@@ -61,7 +64,8 @@ export const useImportLeads = () => {
           total_rows: data.length,
           column_mapping: config.mapping,
           status: "processing",
-        })
+          user_id,
+        } as any)
         .select()
         .single();
 
@@ -83,7 +87,7 @@ export const useImportLeads = () => {
       for (const tagName of tagsToCreate) {
         const { data: newTag, error } = await supabase
           .from("tags")
-          .insert({ name: tagName, source: "import" })
+          .insert({ name: tagName, source: "import", user_id })
           .select()
           .single();
 
@@ -130,7 +134,7 @@ export const useImportLeads = () => {
               if (dbField.startsWith("purchase_")) {
                 hasPurchaseData = true;
                 const purchaseField = dbField.replace("purchase_", "");
-                
+
                 if (purchaseField === "value") {
                   purchaseData[purchaseField] = parseFloat(value.toString().replace(/[^0-9.-]/g, '')) || 0;
                 } else if (purchaseField === "date") {
@@ -213,11 +217,11 @@ export const useImportLeads = () => {
             if (normalizedPhone || normalizedEmail) {
               // Construir condições OR apenas para campos preenchidos
               const conditions: string[] = [];
-              
+
               if (normalizedPhone && normalizedPhone.length >= 10) {
                 conditions.push(`phone.ilike.%${normalizedPhone}%`);
               }
-              
+
               if (normalizedEmail) {
                 conditions.push(`email.ilike.${normalizedEmail}`);
               }
@@ -246,7 +250,7 @@ export const useImportLeads = () => {
             if (!leadId) {
               const { data: newLead, error: leadError } = await supabase
                 .from("leads")
-                .insert(leadData)
+                .insert({ ...leadData, user_id })
                 .select()
                 .single();
 
@@ -261,6 +265,7 @@ export const useImportLeads = () => {
                 event_type: "lead_imported",
                 source: "import",
                 event_data: { filename },
+                user_id,
               });
             }
 
@@ -269,7 +274,7 @@ export const useImportLeads = () => {
               purchaseData.lead_id = leadId;
               purchaseData.platform = "import";
               purchaseData.source = leadData.source || "import";
-              
+
               // Valores padrão
               if (!purchaseData.status) {
                 purchaseData.status = "approved";
@@ -280,7 +285,7 @@ export const useImportLeads = () => {
 
               // CRIAR PRODUTO AUTOMATICAMENTE SE NÃO EXISTIR
               const productNameLower = purchaseData.product_name.toLowerCase().trim();
-              
+
               if (!productCache[productNameLower]) {
                 // Verificar se produto já existe
                 const { data: existingProduct } = await supabase
@@ -294,7 +299,7 @@ export const useImportLeads = () => {
                 } else {
                   // Criar produto automaticamente
                   const baseSlug = slugify(purchaseData.product_name);
-                  
+
                   // Verificar se slug já existe
                   const { data: slugExists } = await supabase
                     .from("products")
@@ -313,7 +318,8 @@ export const useImportLeads = () => {
                       price: purchaseData.value || 0,
                       is_active: true,
                       metadata: { source: "import", auto_created: true },
-                    })
+                      user_id,
+                    } as any)
                     .select()
                     .single();
 
@@ -331,7 +337,7 @@ export const useImportLeads = () => {
 
               const { error: purchaseError } = await supabase
                 .from("purchases")
-                .insert(purchaseData);
+                .insert({ ...purchaseData, user_id });
 
               if (purchaseError) {
                 console.error("Error creating purchase:", purchaseError);
@@ -347,11 +353,12 @@ export const useImportLeads = () => {
                   lead_id: leadId,
                   event_type: "purchase_created",
                   source: "import",
-                  event_data: { 
+                  event_data: {
                     product: purchaseData.product_name,
                     value: purchaseData.value,
                     product_slug: purchaseData.product_slug,
                   },
+                  user_id,
                 });
               }
             }
@@ -387,9 +394,9 @@ export const useImportLeads = () => {
                     tag_id: tagId,
                     source: "import",
                   },
-                  { 
+                  {
                     onConflict: 'lead_id,tag_id',
-                    ignoreDuplicates: true 
+                    ignoreDuplicates: true
                   }
                 );
               }
@@ -424,7 +431,7 @@ export const useImportLeads = () => {
       queryClient.invalidateQueries({ queryKey: ["unlinked-purchases"] });
 
       let message = `Importação concluída! ${result.imported} leads importados, ${result.duplicates} duplicatas atualizadas.`;
-      
+
       if (result.productsCreated.length > 0) {
         message += ` ${result.productsCreated.length} produtos criados.`;
       }

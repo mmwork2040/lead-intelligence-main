@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getCurrentUserId } from "@/lib/getCurrentUserId";
 import { PeriodFilter, calculateDateRange } from "@/lib/dateUtils";
 
 export type CRMStatus = "lead" | "engajado" | "aquecido" | "carrinho" | "comprador" | "perdido";
@@ -120,6 +121,7 @@ export const useUpdateLeadStatus = () => {
       if (error) throw error;
 
       // Create event
+      const user_id = await getCurrentUserId();
       const { error: eventError } = await supabase
         .from("lead_events")
         .insert({
@@ -127,6 +129,7 @@ export const useUpdateLeadStatus = () => {
           event_type: "status_changed",
           event_data: { new_status: status },
           source: "crm",
+          user_id,
         });
       if (eventError) console.error('Error creating purchase event:', eventError);
 
