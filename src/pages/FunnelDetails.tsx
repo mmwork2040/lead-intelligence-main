@@ -46,7 +46,6 @@ export default function FunnelDetails() {
         queryKey: ["funnel", id],
         queryFn: async () => {
             if (isNew) return null;
-            // @ts-ignore
             const { data, error } = await supabase
                 .from('funnels')
                 .select('*')
@@ -64,7 +63,6 @@ export default function FunnelDetails() {
         queryKey: ["funnel-steps", id],
         queryFn: async () => {
             if (isNew) return [];
-            // @ts-ignore
             const { data, error } = await supabase
                 .from('funnel_steps')
                 .select('*')
@@ -81,7 +79,6 @@ export default function FunnelDetails() {
     const createFunnelMutation = useMutation({
         mutationFn: async () => {
             // 1. Create Funnel
-            // @ts-ignore
             const { data: newFunnel, error: funnelError } = await supabase
                 .from('funnels')
                 .insert({
@@ -104,7 +101,6 @@ export default function FunnelDetails() {
                 is_conversion_point: s.is_conversion_point
             }));
 
-            // @ts-ignore
             const { error: stepsError } = await supabase
                 .from('funnel_steps')
                 .insert(stepsToInsert);
@@ -128,7 +124,6 @@ export default function FunnelDetails() {
     const addStepMutation = useMutation({
         mutationFn: async () => {
             const nextOrder = steps ? steps.length + 1 : 1;
-            // @ts-ignore
             const { error } = await supabase
                 .from('funnel_steps')
                 .insert({
@@ -155,7 +150,6 @@ export default function FunnelDetails() {
     // Update Step Mutation (View Mode)
     const updateStepMutation = useMutation({
         mutationFn: async (updatedStep: any) => {
-            // @ts-ignore
             const { error } = await supabase
                 .from('funnel_steps')
                 .update({
@@ -183,7 +177,6 @@ export default function FunnelDetails() {
         if (!confirm("Tem certeza que deseja remover esta etapa?")) return;
 
         try {
-            // @ts-ignore
             const { error } = await supabase.from('funnel_steps').delete().eq('id', stepId);
             if (error) throw error;
             toast.success("Etapa removida!");
@@ -240,7 +233,6 @@ export default function FunnelDetails() {
         queryFn: async () => {
             if (isNew) return [];
 
-            // @ts-ignore
             const { data: routeSteps, error: stepError } = await supabase
                 .from('funnel_steps')
                 .select('id')
@@ -251,7 +243,6 @@ export default function FunnelDetails() {
 
             const stepIds = routeSteps.map((s: any) => s.id);
 
-            // @ts-ignore
             const { data: events, error: eventsError } = await supabase
                 .from('tracking_events')
                 .select(`
@@ -483,7 +474,6 @@ export default function FunnelDetails() {
                                 <Skeleton className="h-10 w-64 mb-2" />
                             ) : (
                                 <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent flex items-center gap-3">
-                                    {/* @ts-ignore */}
                                     {funnel?.name}
                                 </h1>
                             )}

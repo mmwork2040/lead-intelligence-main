@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Target, Package, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,22 @@ import Products from "./Products";
 import DashboardLayout from "@/components/DashboardLayout";
 
 export default function ProductsAndCampaigns() {
+    const [activeTab, setActiveTab] = useState("campaigns");
+    const [openCampaignDialog, setOpenCampaignDialog] = useState(false);
+    const [openProductDialog, setOpenProductDialog] = useState(false);
+
+    const handleNewCampaign = () => {
+        setActiveTab("campaigns");
+        setOpenCampaignDialog(true);
+        setTimeout(() => setOpenCampaignDialog(false), 100);
+    };
+
+    const handleNewProduct = () => {
+        setActiveTab("products");
+        setOpenProductDialog(true);
+        setTimeout(() => setOpenProductDialog(false), 100);
+    };
+
     return (
         <DashboardLayout>
             <div className="space-y-6 max-w-7xl mx-auto">
@@ -22,18 +37,18 @@ export default function ProductsAndCampaigns() {
                         </p>
                     </div>
                     <div className="flex gap-2">
-                        <Button variant="outline" className="shadow-sh-sm rounded-xl gap-2">
+                        <Button variant="outline" className="shadow-sh-sm rounded-xl gap-2" onClick={handleNewProduct}>
                             <Plus className="w-4 h-4" />
                             Novo Produto
                         </Button>
-                        <Button className="shadow-sh-sm rounded-xl gap-2">
+                        <Button className="shadow-sh-sm rounded-xl gap-2" onClick={handleNewCampaign}>
                             <Plus className="w-4 h-4" />
                             Nova Campanha
                         </Button>
                     </div>
                 </div>
 
-                <Tabs defaultValue="campaigns" className="space-y-6">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
                     <TabsList className="bg-muted/50 p-1 rounded-xl">
                         <TabsTrigger value="campaigns" className="rounded-lg data-[state=active]:shadow-sm flex items-center gap-2">
                             <Target className="w-4 h-4" />
@@ -46,11 +61,11 @@ export default function ProductsAndCampaigns() {
                     </TabsList>
 
                     <TabsContent value="campaigns" className="space-y-4">
-                        <Campaigns />
+                        <Campaigns openDialog={openCampaignDialog} />
                     </TabsContent>
 
                     <TabsContent value="products" className="space-y-4">
-                        <Products />
+                        <Products openDialog={openProductDialog} />
                     </TabsContent>
                 </Tabs>
             </div>

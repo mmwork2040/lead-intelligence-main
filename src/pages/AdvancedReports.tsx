@@ -300,7 +300,7 @@ export default function AdvancedReports() {
 
         {/* AI Insights — always visible after filters */}
         <FacebookAIInsights
-          reportData={reportData!}
+          reportData={reportData}
           period={period}
           isLoading={isLoading}
         />

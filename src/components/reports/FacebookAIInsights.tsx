@@ -8,7 +8,7 @@ import { HierarchicalReportData } from "@/hooks/useFacebookAdsHierarchicalReport
 import { PeriodFilter, getPeriodLabel } from "@/lib/dateUtils";
 
 interface FacebookAIInsightsProps {
-  reportData: HierarchicalReportData;
+  reportData: HierarchicalReportData | null | undefined;
   period: PeriodFilter;
   isLoading?: boolean;
 }

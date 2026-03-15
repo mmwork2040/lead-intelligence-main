@@ -33,6 +33,10 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const PendingApproval = lazy(() => import("./pages/PendingApproval"));
 const Funnels = lazy(() => import("./pages/Funnels"));
 const FunnelDetails = lazy(() => import("./pages/FunnelDetails"));
+const AIAssistant = lazy(() => import("./pages/AIAssistant"));
+const Tracking = lazy(() => import("./pages/Tracking"));
+const AdvancedReports = lazy(() => import("./pages/AdvancedReports"));
+const WebhookLogs = lazy(() => import("./pages/WebhookLogs"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -76,6 +80,14 @@ const App = () => (
                     <Route path="/link-tracking" element={<ProtectedRoute><ErrorBoundary><LinkTracking /></ErrorBoundary></ProtectedRoute>} />
                     <Route path="/settings" element={<ProtectedRoute><ErrorBoundary><Settings /></ErrorBoundary></ProtectedRoute>} />
                     <Route path="/admin/users" element={<ProtectedRoute><ErrorBoundary><UserManagement /></ErrorBoundary></ProtectedRoute>} />
+                    <Route path="/campaigns" element={<ProtectedRoute><ErrorBoundary><Campaigns /></ErrorBoundary></ProtectedRoute>} />
+                    <Route path="/products" element={<ProtectedRoute><ErrorBoundary><Products /></ErrorBoundary></ProtectedRoute>} />
+                    <Route path="/reports" element={<ProtectedRoute><ErrorBoundary><Reports /></ErrorBoundary></ProtectedRoute>} />
+                    <Route path="/integrations" element={<ProtectedRoute><ErrorBoundary><Integrations /></ErrorBoundary></ProtectedRoute>} />
+                    <Route path="/ai-assistant" element={<ProtectedRoute><ErrorBoundary><AIAssistant /></ErrorBoundary></ProtectedRoute>} />
+                    <Route path="/tracking" element={<ProtectedRoute><ErrorBoundary><Tracking /></ErrorBoundary></ProtectedRoute>} />
+                    <Route path="/advanced-reports" element={<ProtectedRoute><ErrorBoundary><AdvancedReports /></ErrorBoundary></ProtectedRoute>} />
+                    <Route path="/webhook-logs" element={<ProtectedRoute><ErrorBoundary><WebhookLogs /></ErrorBoundary></ProtectedRoute>} />
 
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />

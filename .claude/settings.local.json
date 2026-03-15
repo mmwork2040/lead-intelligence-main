@@ -8,7 +8,10 @@
       "Bash(npm run build)",
       "Bash(npm install)",
       "mcp__Claude_Preview__preview_start",
-      "Bash(npx vite build)"
+      "Bash(npx vite build)",
+      "Bash(grep -r \"@ts-ignore\\\\|any\\\\|@ts-expect-error\" /Users/lucasfelipe/Downloads/AI/lead-intelligence-main/src/pages/*.tsx | head -30)",
+      "Bash(grep -A 20 \"CREATE TABLE.*fb_ads_config\" /Users/lucasfelipe/Downloads/AI/lead-intelligence-main/supabase/migrations/*.sql)",
+      "Bash(curl -s \"https://graph.facebook.com/v19.0/act_4374540682628409?fields=name,account_status,currency&access_token=EAAOsweXftW0BQydF5xRtp8zXvPcZA5Fy0MKDpRVUXBYq9arEZCu4f7STHIPUnZC7Mn9F0x4YeYnR1MXg70CGprqgt85npnv6kXqUX5sgnaWU1eZAf0xqrVIhqbmoHMuOkPykZBtioZAgKW0mcSnKXZAGVNWWZB0sxmZAZCAJGjvf9Y10knWzqZBgoDxaChASagZA3GHbkgl8ynW4RCMcVKM7ScuS4jNp9xKtojBeuYe9\" | python3 -m json.tool)"
     ]
   }
 }

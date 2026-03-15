@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card } from "@/components/ui/card";
@@ -54,9 +54,15 @@ const productTypeLabels: Record<string, string> = {
   outro: "Outro",
 };
 
-const Products = () => {
+const Products = ({ openDialog }: { openDialog?: boolean } = {}) => {
   const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (openDialog) {
+      setDialogOpen(true);
+    }
+  }, [openDialog]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);

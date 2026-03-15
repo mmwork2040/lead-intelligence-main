@@ -173,6 +173,7 @@ const Integrations = () => {
   };
 
   return (
+    <DashboardLayout>
     <div className="space-y-6">
       {/* Top-level tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -489,6 +490,7 @@ const Integrations = () => {
         </TabsContent>
       </Tabs>
     </div>
+    </DashboardLayout>
   );
 };
 

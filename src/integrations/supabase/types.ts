@@ -317,6 +317,80 @@ export type Database = {
         }
         Relationships: []
       }
+      funnel_steps: {
+        Row: {
+          id: string
+          funnel_id: string
+          step_order: number
+          name: string
+          url_pattern: string | null
+          event_name: string | null
+          is_conversion_point: boolean | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          funnel_id: string
+          step_order: number
+          name: string
+          url_pattern?: string | null
+          event_name?: string | null
+          is_conversion_point?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          funnel_id?: string
+          step_order?: number
+          name?: string
+          url_pattern?: string | null
+          event_name?: string | null
+          is_conversion_point?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funnel_steps_funnel_id_fkey"
+            columns: ["funnel_id"]
+            isOneToOne: false
+            referencedRelation: "funnels"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      funnels: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          project_slug: string | null
+          is_active: boolean | null
+          created_at: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          project_slug?: string | null
+          is_active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          project_slug?: string | null
+          is_active?: boolean | null
+          created_at?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       goals: {
         Row: {
           campaign_id: string | null
@@ -1077,6 +1151,77 @@ export type Database = {
           source?: string | null
         }
         Relationships: []
+      }
+      tracking_events: {
+        Row: {
+          id: string
+          visitor_id: string
+          lead_id: string | null
+          funnel_step_id: string | null
+          event_type: string
+          page_url: string
+          referrer_url: string | null
+          utm_source: string | null
+          utm_medium: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_term: string | null
+          user_agent: string | null
+          ip_address: string | null
+          fbp: string | null
+          fbc: string | null
+          metadata: Json | null
+          created_at: string | null
+        }
+        Insert: {
+          id?: string
+          visitor_id: string
+          lead_id?: string | null
+          funnel_step_id?: string | null
+          event_type: string
+          page_url: string
+          referrer_url?: string | null
+          utm_source?: string | null
+          utm_medium?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_term?: string | null
+          user_agent?: string | null
+          ip_address?: string | null
+          fbp?: string | null
+          fbc?: string | null
+          metadata?: Json | null
+          created_at?: string | null
+        }
+        Update: {
+          id?: string
+          visitor_id?: string
+          lead_id?: string | null
+          funnel_step_id?: string | null
+          event_type?: string
+          page_url?: string
+          referrer_url?: string | null
+          utm_source?: string | null
+          utm_medium?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_term?: string | null
+          user_agent?: string | null
+          ip_address?: string | null
+          fbp?: string | null
+          fbc?: string | null
+          metadata?: Json | null
+          created_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_events_funnel_step_id_fkey"
+            columns: ["funnel_step_id"]
+            isOneToOne: false
+            referencedRelation: "funnel_steps"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       team_invitations: {
         Row: {

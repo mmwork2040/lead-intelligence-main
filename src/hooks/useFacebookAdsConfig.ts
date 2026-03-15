@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { getCurrentUserId } from "@/lib/getCurrentUserId";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface FacebookAdsConfig {
   id: string;
@@ -14,15 +14,21 @@ export interface FacebookAdsConfig {
 }
 
 export const useFacebookAdsConfig = () => {
+  const { user } = useAuth();
+
   return useQuery({
-    queryKey: ["fb-ads-config"],
+    queryKey: ["fb-ads-config", user?.id],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("fb_ads_config")
         .select("*")
-        .eq("is_active", true)
-        .maybeSingle();
+        .eq("is_active", true);
 
+      if (user?.id) {
+        query = query.eq("user_id" as any, user.id);
+      }
+
+      const { data, error } = await query.maybeSingle();
       if (error) throw error;
       return data as FacebookAdsConfig | null;
     },
@@ -31,6 +37,7 @@ export const useFacebookAdsConfig = () => {
 
 export const useSaveFacebookAdsConfig = () => {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({
@@ -59,15 +66,16 @@ export const useSaveFacebookAdsConfig = () => {
         if (error) throw error;
         return data;
       } else {
-        const user_id = await getCurrentUserId();
+        const insertData: Record<string, unknown> = {
+          access_token: accessToken,
+          ad_account_id: adAccountId,
+          is_active: true,
+        };
+        if (user?.id) insertData.user_id = user.id;
+
         const { data, error } = await supabase
           .from("fb_ads_config")
-          .insert({
-            access_token: accessToken,
-            ad_account_id: adAccountId,
-            is_active: true,
-            user_id,
-          } as any)
+          .insert(insertData as any)
           .select()
           .single();
 

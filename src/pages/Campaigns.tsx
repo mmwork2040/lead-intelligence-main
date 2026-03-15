@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
@@ -18,7 +18,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Plus, TrendingUp, Users, DollarSign, Target, Edit2, Trash2, Power, Search, Code, Layers } from "lucide-react";
 
-const TrackingContent = lazy(() => import("@/components/campaigns/TrackingContent"));
 import { useCampaigns, useCampaignMetrics, useDeleteCampaign, useCampaignCounts, useToggleCampaignStatus, type CampaignFilter } from "@/hooks/useCampaigns";
 import { CampaignDialog } from "@/components/campaigns/CampaignDialog";
 import { CampaignGoalsSection } from "@/components/campaigns/CampaignGoalsSection";
@@ -171,8 +170,14 @@ const CampaignCard = ({
   );
 };
 
-const Campaigns = () => {
+const Campaigns = ({ openDialog }: { openDialog?: boolean } = {}) => {
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (openDialog) {
+      setDialogOpen(true);
+    }
+  }, [openDialog]);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);

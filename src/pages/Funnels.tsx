@@ -33,9 +33,7 @@ export default function Funnels() {
 
         try {
             // Delete child steps first (FK constraint)
-            // @ts-ignore
             await supabase.from('funnel_steps').delete().eq('funnel_id', funnelId);
-            // @ts-ignore
             const { error } = await supabase.from('funnels').delete().eq('id', funnelId);
             if (error) throw error;
 
