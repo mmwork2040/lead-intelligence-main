@@ -120,7 +120,7 @@ export const useCreateInvoiceRequest = () => {
       queryClient.invalidateQueries({ queryKey: ["invoice-requests"] });
       toast.success("Pedido de NF enviado para o financeiro!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error creating invoice request:", error);
       toast.error(error.message || "Erro ao enviar pedido de NF");
     },
@@ -150,7 +150,7 @@ export const useUpdateInvoiceRequestStatus = () => {
       queryClient.invalidateQueries({ queryKey: ["invoice-requests"] });
       toast.success("Status atualizado com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error updating invoice request status:", error);
       toast.error(error.message || "Erro ao atualizar status");
     },
@@ -173,7 +173,7 @@ export const useDeleteInvoiceRequest = () => {
       queryClient.invalidateQueries({ queryKey: ["invoice-requests"] });
       toast.success("Pedido de NF excluído!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error deleting invoice request:", error);
       toast.error(error.message || "Erro ao excluir pedido");
     },

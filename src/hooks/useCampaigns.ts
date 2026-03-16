@@ -90,7 +90,7 @@ export const useToggleCampaignStatus = () => {
       queryClient.invalidateQueries({ queryKey: ["campaign-counts"] });
       toast.success(variables.is_active ? "Campanha ativada!" : "Campanha desativada!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error toggling campaign status:", error);
       toast.error("Erro ao alterar status da campanha");
     },
@@ -212,7 +212,7 @@ export const useCreateCampaign = () => {
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });
       toast.success("Campanha criada com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error creating campaign:", error);
       toast.error(error.message || "Erro ao criar campanha");
     },
@@ -238,7 +238,7 @@ export const useUpdateCampaign = () => {
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });
       toast.success("Campanha atualizada com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error updating campaign:", error);
       toast.error(error.message || "Erro ao atualizar campanha");
     },
@@ -258,7 +258,7 @@ export const useDeleteCampaign = () => {
       queryClient.invalidateQueries({ queryKey: ["campaigns"] });
       toast.success("Campanha excluída com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error deleting campaign:", error);
       toast.error(error.message || "Erro ao excluir campanha");
     },

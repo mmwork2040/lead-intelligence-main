@@ -77,7 +77,7 @@ export const useCreateProductAlias = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Alias adicionado com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error creating alias:", error);
       toast.error(error.message || "Erro ao criar alias");
     },
@@ -123,7 +123,7 @@ export const useDeleteProductAlias = () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
       toast.success("Alias removido!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error deleting alias:", error);
       toast.error(error.message || "Erro ao remover alias");
     },

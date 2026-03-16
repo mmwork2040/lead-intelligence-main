@@ -442,7 +442,7 @@ export const useImportLeads = () => {
         toast.error(`${result.errors} erros encontrados durante a importação.`);
       }
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error importing leads:", error);
       toast.error(error.message || "Erro ao importar leads");
     },

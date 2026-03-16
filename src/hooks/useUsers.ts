@@ -72,7 +72,7 @@ export const useUpdateUserRole = () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success("Permissão atualizada com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error updating user role:", error);
       toast.error(error.message || "Erro ao atualizar permissão");
     },
@@ -95,7 +95,7 @@ export const useRemoveUserRole = () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success("Permissão removida com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error removing user role:", error);
       toast.error(error.message || "Erro ao remover permissão");
     },

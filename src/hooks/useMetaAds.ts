@@ -90,7 +90,7 @@ export const useToggleMetaStatus = () => {
                 } com sucesso no Meta!`
             );
         },
-        onError: (error: any) => {
+        onError: (error: Error) => {
             console.error("Error toggling meta status:", error);
             toast.error("Erro ao alterar status no Meta Ads");
         },

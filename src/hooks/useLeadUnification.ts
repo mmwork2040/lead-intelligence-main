@@ -62,7 +62,7 @@ export const useUnifyLeads = () => {
         toast.error(data.error || "Erro ao unificar leads");
       }
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error unifying leads:", error);
       toast.error(error.message || "Erro ao unificar leads");
     },
@@ -116,7 +116,7 @@ export const useReviewMerge = () => {
       queryClient.invalidateQueries({ queryKey: ["merge-logs"] });
       toast.success("Revisão registrada com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error reviewing merge:", error);
       toast.error(error.message || "Erro ao registrar revisão");
     },

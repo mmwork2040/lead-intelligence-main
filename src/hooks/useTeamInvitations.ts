@@ -42,7 +42,7 @@ export const useCreateInvitation = () => {
           email: email.toLowerCase().trim(),
           role,
           created_by: user?.id,
-        } as any)
+        } as unknown as Record<string, string>)
         .select()
         .single();
 
@@ -53,7 +53,7 @@ export const useCreateInvitation = () => {
       queryClient.invalidateQueries({ queryKey: ["team-invitations"] });
       toast.success("Convite criado com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error creating invitation:", error);
       toast.error("Erro ao criar convite");
     },

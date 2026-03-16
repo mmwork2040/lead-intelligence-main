@@ -23,6 +23,16 @@ export type LeadTag = {
   color: string | null;
 };
 
+type LeadTagJoinRow = {
+  lead_id: string;
+  tags: LeadTag | null;
+};
+
+type LeadTagSingleRow = {
+  tag_id: string;
+  tags: LeadTag | null;
+};
+
 export type LeadWithProducts = Lead & {
   products: LeadProduct[];
   tags: LeadTag[];
@@ -59,7 +69,7 @@ export const useLeads = (filters?: LeadsFilters, pagination?: { page: number; pa
   return useQuery({
     queryKey: ["leads", filters, pagination, user?.id, isDemo],
     queryFn: async () => {
-      if (isDemo) return demoLeads as any;
+      if (isDemo) return demoLeads as unknown as { data: LeadWithProducts[]; total: number; page: number; pageSize: number; totalPages: number };
 
       // ========== STEP 1: Get lead IDs that match product and tag filters ==========
       let productFilteredLeadIds: Set<string> | null = null;
@@ -249,7 +259,7 @@ export const useLeads = (filters?: LeadsFilters, pagination?: { page: number; pa
 
         // Group tags by lead_id
         const tagsByLead: Record<string, LeadTag[]> = {};
-        leadTagsData?.forEach((lt: any) => {
+        (leadTagsData as LeadTagJoinRow[] | null)?.forEach((lt) => {
           if (!tagsByLead[lt.lead_id]) {
             tagsByLead[lt.lead_id] = [];
           }
@@ -314,7 +324,7 @@ export const useLead = (leadId: string) => {
         .select("tag_id, tags(id, name, color)")
         .eq("lead_id", leadId);
 
-      const tags = tagsData?.map((lt: any) => lt.tags).filter(Boolean) || [];
+      const tags = (tagsData as LeadTagSingleRow[] | null)?.map((lt) => lt.tags).filter(Boolean) || [];
 
       return { ...data, tags } as Lead & { tags: LeadTag[] };
     },
@@ -388,7 +398,7 @@ export const useCreateLead = () => {
       queryClient.invalidateQueries({ queryKey: ["tags"] });
       toast.success("Lead criado com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error creating lead:", error);
       toast.error(error.message || "Erro ao criar lead");
     },
@@ -425,8 +435,10 @@ export const useUpdateLead = () => {
           const { data: session } = await supabase.auth.getSession();
 
           // Determine what changed for the summary
+          const currentLeadRecord = currentLead as Record<string, unknown>;
+          const updatesRecord = updates as Record<string, unknown>;
           const changedFields = Object.keys(updates).filter(
-            (key) => (currentLead as any)[key] !== (updates as any)[key]
+            (key) => currentLeadRecord[key] !== updatesRecord[key]
           );
           const changeSummary = changedFields.length > 0
             ? `Alterou: ${changedFields.join(", ")}`
@@ -472,7 +484,7 @@ export const useUpdateLead = () => {
       queryClient.invalidateQueries({ queryKey: ["lead-versions", variables.leadId] });
       toast.success("Lead atualizado com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error updating lead:", error);
       toast.error(error.message || "Erro ao atualizar lead");
     },
@@ -514,7 +526,7 @@ export const useDeleteLead = () => {
       queryClient.invalidateQueries({ queryKey: ["lead-events"] });
       toast.success("Lead excluído com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error deleting lead:", error);
       toast.error(error.message || "Erro ao excluir lead");
     },

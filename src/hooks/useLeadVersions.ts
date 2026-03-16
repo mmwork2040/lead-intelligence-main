@@ -13,8 +13,8 @@ export interface LeadVersionData {
   source?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
-  metadata?: any;
-  [key: string]: any;
+  metadata?: Record<string, unknown>;
+  [key: string]: unknown;
 }
 
 export interface LeadVersion {
@@ -26,6 +26,17 @@ export interface LeadVersion {
   changed_at: string;
   change_summary: string | null;
 }
+
+// Raw row type returned from the untyped lead_versions table
+type LeadVersionDbRow = {
+  id: string;
+  lead_id: string;
+  version_number: number;
+  data: LeadVersionData;
+  changed_by: string | null;
+  changed_at: string;
+  change_summary: string | null;
+};
 
 export const useLeadVersions = (leadId: string) => {
   return useQuery({
@@ -45,7 +56,7 @@ export const useLeadVersions = (leadId: string) => {
           return [] as LeadVersion[];
         }
 
-        return (result.data || []).map((v: any) => ({
+        return (result.data as LeadVersionDbRow[] || []).map((v) => ({
           id: v.id,
           lead_id: v.lead_id,
           version_number: v.version_number,
@@ -85,7 +96,7 @@ export const useCreateLeadVersion = () => {
         .limit(1);
 
       const nextVersion = existingVersions && existingVersions.length > 0 
-        ? ((existingVersions[0] as any).version_number || 0) + 1 
+        ? ((existingVersions[0] as LeadVersionDbRow).version_number || 0) + 1 
         : 1;
 
       const { data: session } = await supabase.auth.getSession();
@@ -140,7 +151,7 @@ export const useRestoreLeadVersion = () => {
           .limit(1);
 
         const nextVersion = existingVersions && existingVersions.length > 0 
-          ? ((existingVersions[0] as any).version_number || 0) + 1 
+          ? ((existingVersions[0] as LeadVersionDbRow).version_number || 0) + 1 
           : 1;
 
         const { data: session } = await supabase.auth.getSession();
@@ -187,7 +198,7 @@ export const useRestoreLeadVersion = () => {
       queryClient.invalidateQueries({ queryKey: ["lead-versions", variables.leadId] });
       toast.success("Lead restaurado com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error restoring lead:", error);
       toast.error("Erro ao restaurar lead");
     },

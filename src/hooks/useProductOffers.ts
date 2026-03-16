@@ -54,7 +54,7 @@ export const useCreateProductOffer = () => {
       queryClient.invalidateQueries({ queryKey: ["product-offers", variables.product_id] });
       toast.success("Oferta adicionada com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error creating product offer:", error);
       toast.error(error.message || "Erro ao adicionar oferta");
     },
@@ -80,7 +80,7 @@ export const useUpdateProductOffer = () => {
       queryClient.invalidateQueries({ queryKey: ["product-offers", result.productId] });
       toast.success("Oferta atualizada com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error updating product offer:", error);
       toast.error(error.message || "Erro ao atualizar oferta");
     },
@@ -104,7 +104,7 @@ export const useDeleteProductOffer = () => {
       queryClient.invalidateQueries({ queryKey: ["product-offers", productId] });
       toast.success("Oferta excluída com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error deleting product offer:", error);
       toast.error(error.message || "Erro ao excluir oferta");
     },

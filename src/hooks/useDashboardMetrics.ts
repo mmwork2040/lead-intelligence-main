@@ -5,6 +5,41 @@ import { PeriodFilter, calculateDateRange } from "@/lib/dateUtils";
 import { useIsDemo } from "@/contexts/DemoContext";
 import { demoDashboardMetrics } from "@/services/demoData";
 
+type RecentLeadRow = {
+  lead_id: string;
+  name: string | null;
+  email: string | null;
+  source: string | null;
+  utm_source: string | null;
+  crm_status: string | null;
+  created_at: string;
+  purchases: { id: string; product_name: string; value: number; status: string }[];
+};
+
+type RecentPurchaseRow = {
+  id: string;
+  product_name: string;
+  value: number;
+  status: string;
+  purchase_date: string;
+  lead_id: string;
+  payment_method: string | null;
+  installments: number | null;
+  gross_value: number | null;
+  is_recurring: boolean | null;
+  leads: { name: string | null; email: string | null; phone: string | null; source: string | null; utm_source: string | null; crm_status: string | null } | null;
+};
+
+type RecentEventRow = {
+  id: string;
+  event_type: string;
+  created_at: string;
+  source: string | null;
+  event_data: Record<string, unknown> | null;
+  lead_id: string;
+  leads: { name: string | null; email: string | null } | null;
+};
+
 export interface DashboardFilters {
   period: PeriodFilter;
   campaignSlug?: string | null;
@@ -184,9 +219,9 @@ export const useDashboardMetrics = (filters: DashboardFilters = { period: { type
 
       // ========== COMBINE RECENT ACTIVITIES ==========
       // Transform recent leads into activity format (usar crm_status para diferenciar)
-      const leadActivities = recentLeadsRaw.map((lead: any) => {
+      const leadActivities = (recentLeadsRaw as RecentLeadRow[]).map((lead) => {
         const purchases = lead.purchases || [];
-        const approvedPurchase = purchases.find((p: any) => p.status === "approved");
+        const approvedPurchase = purchases.find((p) => p.status === "approved");
         // Considerar cliente se tem crm_status = comprador OU tem compra aprovada
         const isClient = lead.crm_status === "comprador" || !!approvedPurchase;
         
@@ -208,12 +243,12 @@ export const useDashboardMetrics = (filters: DashboardFilters = { period: { type
       const purchasesByLead: Record<string, {
         totalValue: number;
         products: string[];
-        latestPurchase: any;
+        latestPurchase: RecentPurchaseRow;
         count: number;
-        leadData: any;
+        leadData: RecentPurchaseRow["leads"];
       }> = {};
 
-      recentPurchasesRaw.forEach((purchase: any) => {
+      (recentPurchasesRaw as RecentPurchaseRow[]).forEach((purchase) => {
         const key = purchase.lead_id;
         if (!purchasesByLead[key]) {
           purchasesByLead[key] = {
@@ -266,9 +301,9 @@ export const useDashboardMetrics = (filters: DashboardFilters = { period: { type
         .slice(0, 10);
 
       // Transform status change events
-      const statusActivities = recentEventsRaw
-        .filter((e: any) => e.event_type === "status_changed")
-        .map((event: any) => ({
+      const statusActivities = (recentEventsRaw as RecentEventRow[])
+        .filter((e) => e.event_type === "status_changed")
+        .map((event) => ({
           id: event.id,
           activity_type: "status_change",
           event_type: "status_changed",
@@ -279,8 +314,8 @@ export const useDashboardMetrics = (filters: DashboardFilters = { period: { type
           source: null,
           product_name: null,
           value: null,
-          old_status: (event.event_data as any)?.old_status || null,
-          new_status: (event.event_data as any)?.new_status || null,
+          old_status: (event.event_data?.old_status as string) || null,
+          new_status: (event.event_data?.new_status as string) || null,
         }));
 
       // Combine all activities and sort by date (most recent first)

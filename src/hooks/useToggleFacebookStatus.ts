@@ -32,7 +32,7 @@ export function useToggleFacebookStatus() {
       queryClient.invalidateQueries({ queryKey: ["facebook-adsets"] });
       queryClient.invalidateQueries({ queryKey: ["facebook-ads"] });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Toggle status error:", error);
       toast.error("Erro ao alterar status", { description: error.message });
     },

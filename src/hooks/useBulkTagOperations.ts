@@ -28,7 +28,7 @@ export const useBulkAddTag = () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       toast.success(`Tag adicionada a ${data.count} leads`);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error adding tag in bulk:", error);
       toast.error("Erro ao adicionar tag: " + error.message);
     },
@@ -54,7 +54,7 @@ export const useBulkRemoveTag = () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       toast.success(`Tag removida de ${data.count} leads`);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error removing tag in bulk:", error);
       toast.error("Erro ao remover tag: " + error.message);
     },
@@ -78,7 +78,7 @@ export const useBulkUpdateStatus = () => {
       queryClient.invalidateQueries({ queryKey: ["leads"] });
       toast.success(`Status atualizado em ${data.count} leads`);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error updating status in bulk:", error);
       toast.error("Erro ao atualizar status: " + error.message);
     },
@@ -110,7 +110,7 @@ export const useBulkDeleteLeads = () => {
       queryClient.invalidateQueries({ queryKey: ["leads-summary"] });
       toast.success(`${data.count} leads excluídos`);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error deleting leads in bulk:", error);
       toast.error("Erro ao excluir leads: " + error.message);
     },

@@ -202,7 +202,7 @@ export const useProcessExistingProducts = () => {
         `Migração concluída! ${result.productsCreated} produtos criados, ${result.purchasesUpdated} compras atualizadas.`
       );
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error processing existing products:", error);
       toast.error(error.message || "Erro ao processar produtos");
     },

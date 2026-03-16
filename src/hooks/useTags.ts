@@ -41,7 +41,7 @@ export const useCreateTag = () => {
       queryClient.invalidateQueries({ queryKey: ["tags"] });
       toast.success("Tag criada com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error creating tag:", error);
       toast.error(error.message || "Erro ao criar tag");
     },
@@ -82,7 +82,7 @@ export const useAddTagToLead = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["lead-tags", variables.leadId] });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error adding tag to lead:", error);
       toast.error(error.message || "Erro ao adicionar tag");
     },
@@ -106,7 +106,7 @@ export const useRemoveTagFromLead = () => {
       queryClient.invalidateQueries({ queryKey: ["lead-tags", variables.leadId] });
       toast.success("Tag removida com sucesso!");
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       console.error("Error removing tag from lead:", error);
       toast.error(error.message || "Erro ao remover tag");
     },

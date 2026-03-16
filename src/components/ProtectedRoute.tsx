@@ -19,16 +19,11 @@ function isDemoRouteAllowed(path: string): boolean {
   return DEMO_ALLOWED_ROUTES.some(r => path === r || path.startsWith(r + "/"));
 }
 
-// TODO: Remover antes de ir para produção
-const BYPASS_AUTH = true;
-
 export function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, isLoading } = useAuth();
   const { isDemo } = useDemo();
   const { hasRole, role, isLoading: isRoleLoading } = useHasAnyRole();
   const location = useLocation();
-
-  if (BYPASS_AUTH) return <>{children}</>;
 
 
   // Demo mode: allow only view-only routes
