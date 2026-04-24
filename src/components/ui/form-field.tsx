@@ -14,7 +14,8 @@ interface FormFieldProps extends InputProps {
 
 const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
   ({ label, error, success, description, required, className, id, ...props }, ref) => {
-    const fieldId = id || React.useId();
+    const generatedId = React.useId();
+    const fieldId = id || generatedId;
     const descriptionId = `${fieldId}-description`;
     const errorId = `${fieldId}-error`;
 

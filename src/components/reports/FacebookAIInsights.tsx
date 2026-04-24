@@ -114,7 +114,7 @@ Seja conciso, use dados concretos. Responda em português brasileiro.`;
               result += content;
               setInsights(result);
             }
-          } catch {}
+          } catch { /* ignora chunks inválidos do stream */ }
         }
       }
 

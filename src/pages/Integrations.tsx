@@ -329,57 +329,49 @@ const Integrations = () => {
           <Alert className="border-primary/30 bg-primary/5">
             <AlertCircle className="h-5 w-5 text-primary" />
             <AlertTitle className="text-base font-semibold mb-3">
-              Como gerar o Access Token correto do Facebook
+              Como gerar o Token correto do Facebook (Recomendado)
             </AlertTitle>
             <AlertDescription className="space-y-4 text-sm">
               <p className="text-muted-foreground">
-                O Access Token precisa ter as permissões <code className="px-2 py-1 bg-muted rounded text-xs font-mono">ads_read</code> e{" "}
-                <code className="px-2 py-1 bg-muted rounded text-xs font-mono">ads_management</code> para funcionar corretamente.
+                Para que a sincronização funcione de forma permanente, recomendamos usar um <span className="font-bold text-foreground">System User Token</span>. Tokens gerados pelo Explorer expiram em poucas horas.
               </p>
 
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div className="flex gap-3">
-                  <span className="font-bold text-primary shrink-0">1.</span>
-                  <div className="space-y-1">
-                    <p className="font-medium text-foreground">Acesse o Graph API Explorer</p>
-                    <a
-                      href="https://developers.facebook.com/tools/explorer/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-primary hover:underline"
-                    >
-                      developers.facebook.com/tools/explorer
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
+                  <span className="font-bold text-primary shrink-0 text-base">A.</span>
+                  <div className="space-y-2">
+                    <p className="font-semibold text-foreground">Método Profissional (System User):</p>
+                    <ol className="list-decimal ml-5 space-y-1 text-muted-foreground">
+                      <li>Acesse as <a href="https://business.facebook.com/settings/system-users" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Configurações do Negócio</a>.</li>
+                      <li>Selecione ou crie um <b>Usuário do Sistema</b> (Admin).</li>
+                      <li>Clique em <b>"Gerar Novo Token"</b>.</li>
+                      <li>Selecione o seu <b>App</b> e marque: <code className="text-xs bg-muted p-1 rounded">ads_read</code> e <code className="text-xs bg-muted p-1 rounded">ads_management</code>.</li>
+                      <li>Copie o token e salve acima.</li>
+                    </ol>
                   </div>
                 </div>
 
-                <div className="flex gap-3">
-                  <span className="font-bold text-primary shrink-0">2.</span>
-                  <p>Selecione seu App no dropdown superior</p>
-                </div>
+                <Separator className="opacity-50" />
 
                 <div className="flex gap-3">
-                  <span className="font-bold text-primary shrink-0">3.</span>
-                  <div className="space-y-1">
-                    <p>Clique em <span className="font-medium text-foreground">"Generate Access Token"</span> e marque estas permissões:</p>
-                    <div className="flex flex-wrap gap-2 ml-5">
-                      <Badge variant="secondary" className="font-mono text-xs">ads_read</Badge>
-                      <Badge variant="secondary" className="font-mono text-xs">ads_management</Badge>
-                    </div>
+                  <span className="font-bold text-primary shrink-0 text-base">B.</span>
+                  <div className="space-y-2">
+                    <p className="font-semibold text-foreground">Método Rápido (Teste):</p>
+                    <ol className="list-decimal ml-5 space-y-1 text-muted-foreground">
+                      <li>Acesse o <a href="https://developers.facebook.com/tools/explorer/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Graph API Explorer</a>.</li>
+                      <li>No dropdown <b>"Meta App"</b>, selecione o seu App (não use o default).</li>
+                      <li>Em <b>"Permissions"</b>, adicione <code className="text-xs bg-muted p-1 rounded">ads_read</code> e <code className="text-xs bg-muted p-1 rounded">ads_management</code>.</li>
+                      <li>Clique em <b>Generate Access Token</b>.</li>
+                    </ol>
                   </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <span className="font-bold text-primary shrink-0">4.</span>
-                  <p>Copie o token gerado e cole acima</p>
                 </div>
               </div>
 
-              <div className="bg-muted/50 border border-border rounded-lg p-3 mt-4">
-                <p className="text-xs text-muted-foreground">
-                  <span className="font-semibold">Dica:</span> Para uso permanente, recomendamos usar um{" "}
-                  <span className="font-medium text-foreground">System User Token</span> que não expira.
+              <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 mt-4 flex gap-3 items-start">
+                <AlertTriangle className="h-4 w-4 text-yellow-600 shrink-0 mt-0.5" />
+                <p className="text-xs text-yellow-700 dark:text-yellow-400">
+                  <span className="font-bold uppercase mr-1">Importante:</span> 
+                  O ID da Conta de Anúncios deve ser numérico (ex: 123456789). O sistema adicionará o prefixo "act_" automaticamente se necessário.
                 </p>
               </div>
             </AlertDescription>

@@ -68,7 +68,7 @@ interface SyncOptions {
   activeOnly: boolean;
 }
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -146,7 +146,7 @@ serve(async (req) => {
       ? config.ad_account_id
       : `act_${config.ad_account_id}`;
 
-    const baseUrl = "https://graph.facebook.com/v21.0";
+    const baseUrl = "https://graph.facebook.com/v25.0";
 
     // Validate token before proceeding
     console.info("Validating Facebook token...");

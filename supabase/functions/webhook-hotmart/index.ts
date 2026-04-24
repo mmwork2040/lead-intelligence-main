@@ -59,7 +59,7 @@ interface HotmartWebhook {
   };
 }
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -343,15 +343,58 @@ serve(async (req) => {
         date: purchaseDate
       });
 
+      // Normalize status mapping
+      const rawStatus = purchase.status.toUpperCase();
+      let normalizedStatus = rawStatus.toLowerCase();
+      
+      const approvedStatuses = ['APPROVED', 'COMPLETE', 'COMPLETED'];
+      const refundStatuses = ['REFUNDED', 'CHARGEBACK'];
+      const canceledStatuses = ['CANCELED', 'CANCELLED', 'EXPIRED'];
+      
+      if (approvedStatuses.includes(rawStatus)) {
+        normalizedStatus = 'approved';
+      } else if (refundStatuses.includes(rawStatus)) {
+        normalizedStatus = 'refunded';
+      } else if (canceledStatuses.includes(rawStatus)) {
+        normalizedStatus = 'canceled';
+      }
+
+      console.log('Processing purchase status:', {
+        transaction: purchase.transaction,
+        rawStatus,
+        normalizedStatus
+      });
+
       // Check if purchase already exists
       const { data: existingPurchase } = await supabase
         .from('purchases')
-        .select('id')
+        .select('id, status')
         .eq('transaction_id', purchase.transaction)
         .limit(1);
 
-      if (!existingPurchase || existingPurchase.length === 0) {
-        // Intelligent product matching
+      if (existingPurchase && existingPurchase.length > 0) {
+        // Update existing purchase
+        const { error: updateError } = await supabase
+          .from('purchases')
+          .update({
+            status: normalizedStatus,
+            updated_at: new Date().toISOString(),
+            metadata: { 
+              ...payload.data,
+              last_event: payload.event, 
+              last_version: payload.version 
+            }
+          })
+          .eq('transaction_id', purchase.transaction);
+
+        if (updateError) {
+          console.error('Error updating purchase:', updateError);
+          throw new Error(`Error updating purchase: ${updateError.message}`);
+        }
+        
+        console.log('Purchase status updated:', purchase.transaction, 'to', normalizedStatus);
+      } else {
+        // Intelligent product matching (keep existing logic)
         let productSlug = null;
         const hotmartCode = String(payload.data.product.id);
         const productName = payload.data.product.name;
@@ -396,7 +439,6 @@ serve(async (req) => {
               const metadata = product.metadata as Record<string, any> || {};
               const aliases: string[] = metadata.aliases || [];
 
-              // Check if product name matches any alias
               const matchedAlias = aliases.find(alias =>
                 alias.toLowerCase() === normalizedName ||
                 normalizedName.includes(alias.toLowerCase()) ||
@@ -421,12 +463,10 @@ serve(async (req) => {
 
           if (allProducts) {
             const normalizedName = productName.toLowerCase();
-            // Extract keywords (words with 4+ chars)
             const keywords = normalizedName.split(/\s+/).filter(w => w.length >= 4);
 
             for (const product of allProducts) {
               const productNameLower = product.name.toLowerCase();
-              // Check if at least 2 keywords match or 50% of keywords
               const matchingKeywords = keywords.filter(kw => productNameLower.includes(kw));
               const threshold = Math.max(2, Math.floor(keywords.length * 0.5));
 
@@ -450,7 +490,6 @@ serve(async (req) => {
 
           console.log('No product match found, auto-creating product:', productName, '-> slug:', productSlug);
 
-          // Create the product automatically
           const { error: createError } = await supabase
             .from('products')
             .insert({
@@ -469,7 +508,6 @@ serve(async (req) => {
           if (!createError) {
             console.log('Product auto-created successfully:', productName);
           } else if (createError.code === '23505') {
-            // Duplicate key - product already exists, just use the slug
             console.log('Product already exists, using existing:', productSlug);
           } else {
             console.error('Error auto-creating product:', createError);
@@ -484,7 +522,7 @@ serve(async (req) => {
             product_code: String(payload.data.product.id),
             product_slug: productSlug,
             project_slug: projectSlug,
-            status: purchase.status.toLowerCase(),
+            status: normalizedStatus,
             value: netValue,
             gross_value: grossValue,
             commission: platformFee,
@@ -510,19 +548,29 @@ serve(async (req) => {
         }
 
         console.log('Purchase created successfully:', purchaseData.id);
+      }
 
-        // Update lead CRM status to 'comprador' if approved or completed
-        const approvedStatuses = ['APPROVED', 'COMPLETE', 'COMPLETED'];
-        if (approvedStatuses.includes(purchase.status.toUpperCase())) {
-          await supabase
-            .from('leads')
-            .update({ crm_status: 'comprador', client_type: 'cliente' })
-            .eq('lead_id', leadId);
+      // Update lead CRM status based on purchase status
+      if (normalizedStatus === 'approved') {
+        await supabase
+          .from('leads')
+          .update({ crm_status: 'comprador', client_type: 'cliente' })
+          .eq('lead_id', leadId);
 
-          console.log('Lead CRM status updated to comprador');
-        }
-      } else {
-        console.log('Purchase already exists:', purchase.transaction);
+        console.log('Lead CRM status updated to comprador');
+      } else if (normalizedStatus === 'refunded') {
+        // Optional: you could check if they have other active purchases
+        // For now, let's keep them as cliente but maybe update the CRM tag
+        await supabase
+          .from('lead_events')
+          .insert({
+            lead_id: leadId,
+            event_type: 'PURCHASE_REFUNDED_NOTIF',
+            event_data: { transaction_id: purchase.transaction, amount: netValue },
+            source: 'system'
+          });
+          
+        console.log('Refund event registered for lead');
       }
     }
 

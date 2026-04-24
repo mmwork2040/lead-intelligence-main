@@ -6,7 +6,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -80,7 +80,7 @@ serve(async (req) => {
     const cleanAdAccountId = accountIdToUse.replace(/^act_/, "");
 
     const accountUrl =
-      `https://graph.facebook.com/v18.0/act_${cleanAdAccountId}?fields=id,name,account_status,currency&access_token=${tokenToUse}`;
+      `https://graph.facebook.com/v25.0/act_${cleanAdAccountId}?fields=id,name,account_status,currency&access_token=${tokenToUse}`;
     const accountResponse = await fetch(accountUrl);
 
     if (!accountResponse.ok) {

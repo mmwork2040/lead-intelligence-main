@@ -151,7 +151,7 @@ const Auth = () => {
               </div>
             )}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className={`grid w-full ${inviteToken ? 'grid-cols-2' : 'grid-cols-1'} bg-muted/50 p-1 rounded-xl`}>
+              <TabsList className="grid w-full grid-cols-2 bg-muted/50 p-1 rounded-xl">
                 <TabsTrigger
                   value="login"
                   className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:glow-sm"
@@ -159,15 +159,13 @@ const Auth = () => {
                 >
                   Login
                 </TabsTrigger>
-                {inviteToken && (
-                  <TabsTrigger
-                    value="signup"
-                    className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:glow-sm"
-                    onClick={() => setSignupError(null)}
-                  >
-                    Cadastro
-                  </TabsTrigger>
-                )}
+                <TabsTrigger
+                  value="signup"
+                  className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:glow-sm"
+                  onClick={() => setSignupError(null)}
+                >
+                  Cadastro
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="login">

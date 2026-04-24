@@ -209,7 +209,7 @@ Seja específico com números e percentuais quando possível.`;
                     >
                       {item.includes("✅") ? "✅" : item.includes("⚠️") ? "⚠️" : "📊"}
                     </Badge>
-                    <span className="text-sm">{item.replace(/^[✅⚠️📊]\s*/, "")}</span>
+                    <span className="text-sm">{item.replace(/^[✅⚠️📊]\s*/u, "")}</span>
                   </div>
                 ))}
               </div>

@@ -80,7 +80,7 @@ export function PageAIInsights({
               result += content;
               setInsights(result);
             }
-          } catch {}
+          } catch { /* ignora chunks inválidos do stream */ }
         }
       }
 

@@ -55,8 +55,8 @@ export const calculateScoreFromResponses = (answers: Record<string, any>): numbe
   const renda = answers.renda || answers.faixa_renda || answers.income;
   if (renda) {
     const rendaStr = String(renda).toLowerCase();
-    if (rendaStr.includes("20") || rendaStr.includes("20000")) score += 30;
-    else if (rendaStr.includes("10") && rendaStr.includes("20")) score += 25;
+    if (rendaStr.includes("10") && rendaStr.includes("20")) score += 25;
+    else if (rendaStr.includes("20") || rendaStr.includes("20000")) score += 30;
     else if (rendaStr.includes("5") && rendaStr.includes("10")) score += 20;
     else if (rendaStr.includes("3") && rendaStr.includes("5")) score += 10;
     else score += 5;
