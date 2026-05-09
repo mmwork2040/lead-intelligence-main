@@ -422,14 +422,14 @@ export const useUpdateLead = () => {
         try {
           // Get the current max version number
           const { data: existingVersions } = await supabase
-            .from("lead_versions" as any)
+            .from("lead_versions")
             .select("version_number")
             .eq("lead_id", leadId)
             .order("version_number", { ascending: false })
             .limit(1);
 
           const nextVersion = existingVersions && existingVersions.length > 0
-            ? ((existingVersions[0] as any).version_number || 0) + 1
+            ? (existingVersions[0].version_number || 0) + 1
             : 1;
 
           const { data: session } = await supabase.auth.getSession();
@@ -445,11 +445,11 @@ export const useUpdateLead = () => {
             : "Atualização de dados";
 
           await supabase
-            .from("lead_versions" as any)
+            .from("lead_versions")
             .insert({
               lead_id: leadId,
               version_number: nextVersion,
-              data: currentLead,
+              data: currentLead as any,
               changed_by: session?.session?.user?.id || null,
               change_summary: changeSummary,
             });

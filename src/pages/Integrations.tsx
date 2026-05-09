@@ -14,6 +14,7 @@ import { Webhook, Copy, Check, Activity, Save, RefreshCw, Loader2, AlertCircle, 
 import { useToast } from "@/hooks/use-toast";
 import { useFacebookAdsConfig, useSaveFacebookAdsConfig, useSyncFacebookAds, useTestFacebookConnection } from "@/hooks/useFacebookAdsConfig";
 import { useFacebookTokenStatus } from "@/hooks/useFacebookTokenStatus";
+import { useUserMCPConfigs, useSaveMCPConfig } from "@/hooks/useUserMCPConfig";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -29,6 +30,8 @@ const Integrations = () => {
   const { mutate: testConnection, isPending: testPending } = useTestFacebookConnection();
   const { mutate: syncAds, isPending: syncPending } = useSyncFacebookAds();
   const { data: tokenStatus, isLoading: tokenStatusLoading } = useFacebookTokenStatus(!!fbConfig);
+  const { data: mcpConfigs } = useUserMCPConfigs();
+  const { mutate: saveMCP, isPending: saveMCPPending } = useSaveMCPConfig();
 
   const [fbForm, setFbForm] = useState({
     accessToken: "",
@@ -181,6 +184,10 @@ const Integrations = () => {
           <TabsTrigger value="connections" className="flex items-center gap-2">
             <Webhook className="h-4 w-4" />
             Conexões
+          </TabsTrigger>
+          <TabsTrigger value="mcp" className="flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            Configuração MCP
           </TabsTrigger>
           <TabsTrigger value="logs" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
@@ -472,6 +479,64 @@ const Integrations = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* MCP Tab */}
+        <TabsContent value="mcp" className="mt-6 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Seu Servidor MCP Individual</CardTitle>
+              <CardDescription>
+                Cada usuário pode cadastrar seu próprio servidor MCP para gerenciar suas conexões de forma segura e privada.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="mcp_url">URL do Servidor MCP</Label>
+                <div className="flex gap-2">
+                  <Input 
+                    id="mcp_url" 
+                    placeholder="https://seu-mcp-server.com/mcp" 
+                    defaultValue={mcpConfigs?.find(c => c.provider === 'facebook')?.server_url || ''}
+                    className="flex-1"
+                  />
+                  <Button onClick={() => {
+                    const url = (document.getElementById('mcp_url') as HTMLInputElement).value;
+                    saveMCP({ provider: 'facebook', server_url: url });
+                  }} disabled={saveMCPPending}>
+                    {saveMCPPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Salvar"}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  O sistema usará este servidor para realizar operações de IA e sincronização específicas da sua conta.
+                </p>
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2">
+                <h3 className="font-semibold text-sm">Status da Conexão</h3>
+                <div className="flex items-center gap-2">
+                  {mcpConfigs?.some(c => c.is_active) ? (
+                    <Badge variant="default" className="bg-green-500 hover:bg-green-600">
+                      <Check className="h-3 w-3 mr-1" /> Servidor Ativo
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary">Nenhum servidor configurado</Badge>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>O que é um servidor MCP?</AlertTitle>
+            <AlertDescription className="text-xs">
+              O Model Context Protocol (MCP) permite que assistentes de IA se conectem diretamente às suas ferramentas e dados. 
+              Ao cadastrar seu próprio servidor, você garante que apenas você tenha controle sobre como sua conta do Facebook é acessada.
+            </AlertDescription>
+          </Alert>
         </TabsContent>
 
         {/* Logs Tab */}

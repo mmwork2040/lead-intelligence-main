@@ -10,7 +10,7 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.5"
+    PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
@@ -21,13 +21,13 @@ export type Database = {
           created_at: string | null
           end_date: string | null
           id: string
-          is_active: boolean | null
           name: string
           pixel_code: string | null
           products: string[] | null
           slug: string
           start_date: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           ad_spend?: number | null
@@ -35,13 +35,13 @@ export type Database = {
           created_at?: string | null
           end_date?: string | null
           id?: string
-          is_active?: boolean | null
           name: string
           pixel_code?: string | null
           products?: string[] | null
           slug: string
           start_date?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           ad_spend?: number | null
@@ -49,13 +49,13 @@ export type Database = {
           created_at?: string | null
           end_date?: string | null
           id?: string
-          is_active?: boolean | null
           name?: string
           pixel_code?: string | null
           products?: string[] | null
           slug?: string
           start_date?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -75,6 +75,7 @@ export type Database = {
           status: string | null
           updated_at: string | null
           updated_time: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -91,6 +92,7 @@ export type Database = {
           status?: string | null
           updated_at?: string | null
           updated_time?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -107,6 +109,7 @@ export type Database = {
           status?: string | null
           updated_at?: string | null
           updated_time?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -119,6 +122,7 @@ export type Database = {
           is_active: boolean | null
           last_sync_at: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           access_token: string
@@ -128,6 +132,7 @@ export type Database = {
           is_active?: boolean | null
           last_sync_at?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           access_token?: string
@@ -137,6 +142,7 @@ export type Database = {
           is_active?: boolean | null
           last_sync_at?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -158,6 +164,7 @@ export type Database = {
           targeting: Json | null
           updated_at: string | null
           updated_time: string | null
+          user_id: string | null
         }
         Insert: {
           bid_amount?: number | null
@@ -176,6 +183,7 @@ export type Database = {
           targeting?: Json | null
           updated_at?: string | null
           updated_time?: string | null
+          user_id?: string | null
         }
         Update: {
           bid_amount?: number | null
@@ -194,6 +202,7 @@ export type Database = {
           targeting?: Json | null
           updated_at?: string | null
           updated_time?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -214,6 +223,7 @@ export type Database = {
           stop_time: string | null
           updated_at: string | null
           updated_time: string | null
+          user_id: string | null
         }
         Insert: {
           campaign_slug?: string | null
@@ -231,6 +241,7 @@ export type Database = {
           stop_time?: string | null
           updated_at?: string | null
           updated_time?: string | null
+          user_id?: string | null
         }
         Update: {
           campaign_slug?: string | null
@@ -248,6 +259,7 @@ export type Database = {
           stop_time?: string | null
           updated_at?: string | null
           updated_time?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -272,6 +284,7 @@ export type Database = {
           reach: number | null
           spend: number | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           clicks?: number | null
@@ -293,6 +306,7 @@ export type Database = {
           reach?: number | null
           spend?: number | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           clicks?: number | null
@@ -314,42 +328,46 @@ export type Database = {
           reach?: number | null
           spend?: number | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
       funnel_steps: {
         Row: {
-          id: string
-          funnel_id: string
-          step_order: number
-          name: string
-          url_pattern: string | null
-          event_name: string | null
-          is_conversion_point: boolean | null
           created_at: string | null
+          event_name: string | null
+          funnel_id: string
+          id: string
+          is_conversion_point: boolean | null
+          name: string
+          step_order: number
           updated_at: string | null
+          url_pattern: string | null
+          user_id: string | null
         }
         Insert: {
-          id?: string
-          funnel_id: string
-          step_order: number
-          name: string
-          url_pattern?: string | null
-          event_name?: string | null
-          is_conversion_point?: boolean | null
           created_at?: string | null
+          event_name?: string | null
+          funnel_id: string
+          id?: string
+          is_conversion_point?: boolean | null
+          name: string
+          step_order: number
           updated_at?: string | null
+          url_pattern?: string | null
+          user_id?: string | null
         }
         Update: {
-          id?: string
-          funnel_id?: string
-          step_order?: number
-          name?: string
-          url_pattern?: string | null
-          event_name?: string | null
-          is_conversion_point?: boolean | null
           created_at?: string | null
+          event_name?: string | null
+          funnel_id?: string
+          id?: string
+          is_conversion_point?: boolean | null
+          name?: string
+          step_order?: number
           updated_at?: string | null
+          url_pattern?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -358,36 +376,39 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "funnels"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       funnels: {
         Row: {
-          id: string
-          name: string
-          description: string | null
-          project_slug: string | null
-          is_active: boolean | null
           created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          project_slug: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
-          id?: string
-          name: string
-          description?: string | null
-          project_slug?: string | null
-          is_active?: boolean | null
           created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          project_slug?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
-          id?: string
-          name?: string
-          description?: string | null
-          project_slug?: string | null
-          is_active?: boolean | null
           created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          project_slug?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -408,6 +429,7 @@ export type Database = {
           status: string | null
           target_value: number
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           campaign_id?: string | null
@@ -425,6 +447,7 @@ export type Database = {
           status?: string | null
           target_value: number
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           campaign_id?: string | null
@@ -442,6 +465,7 @@ export type Database = {
           status?: string | null
           target_value?: number
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -455,46 +479,40 @@ export type Database = {
       }
       import_logs: {
         Row: {
-          column_mapping: Json | null
-          completed_at: string | null
           created_at: string | null
-          duplicates_found: number | null
-          error_details: Json | null
-          errors: number | null
-          filename: string
+          error_message: string | null
+          error_rows: number | null
+          file_name: string | null
           id: string
-          imported_rows: number | null
+          metadata: Json | null
           status: string | null
-          tags_created: string[] | null
+          success_rows: number | null
           total_rows: number | null
+          user_id: string | null
         }
         Insert: {
-          column_mapping?: Json | null
-          completed_at?: string | null
           created_at?: string | null
-          duplicates_found?: number | null
-          error_details?: Json | null
-          errors?: number | null
-          filename: string
+          error_message?: string | null
+          error_rows?: number | null
+          file_name?: string | null
           id?: string
-          imported_rows?: number | null
+          metadata?: Json | null
           status?: string | null
-          tags_created?: string[] | null
+          success_rows?: number | null
           total_rows?: number | null
+          user_id?: string | null
         }
         Update: {
-          column_mapping?: Json | null
-          completed_at?: string | null
           created_at?: string | null
-          duplicates_found?: number | null
-          error_details?: Json | null
-          errors?: number | null
-          filename?: string
+          error_message?: string | null
+          error_rows?: number | null
+          file_name?: string | null
           id?: string
-          imported_rows?: number | null
+          metadata?: Json | null
           status?: string | null
-          tags_created?: string[] | null
+          success_rows?: number | null
           total_rows?: number | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -513,6 +531,7 @@ export type Database = {
           purchase_id: string | null
           sent_at: string | null
           status: string
+          user_id: string | null
           value: number
         }
         Insert: {
@@ -529,6 +548,7 @@ export type Database = {
           purchase_id?: string | null
           sent_at?: string | null
           status?: string
+          user_id?: string | null
           value: number
         }
         Update: {
@@ -545,6 +565,7 @@ export type Database = {
           purchase_id?: string | null
           sent_at?: string | null
           status?: string
+          user_id?: string | null
           value?: number
         }
         Relationships: [
@@ -572,6 +593,7 @@ export type Database = {
           id: string
           lead_id: string
           source: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -580,6 +602,7 @@ export type Database = {
           id?: string
           lead_id: string
           source?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -588,6 +611,7 @@ export type Database = {
           id?: string
           lead_id?: string
           source?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -611,6 +635,7 @@ export type Database = {
           reviewed: boolean | null
           reviewed_at: string | null
           reviewed_by: string | null
+          user_id: string | null
         }
         Insert: {
           conflict_fields?: string[] | null
@@ -623,6 +648,7 @@ export type Database = {
           reviewed?: boolean | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          user_id?: string | null
         }
         Update: {
           conflict_fields?: string[] | null
@@ -635,6 +661,7 @@ export type Database = {
           reviewed?: boolean | null
           reviewed_at?: string | null
           reviewed_by?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -649,24 +676,24 @@ export type Database = {
       lead_tags: {
         Row: {
           created_at: string | null
-          id: string
           lead_id: string
           source: string | null
           tag_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
-          id?: string
           lead_id: string
           source?: string | null
           tag_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
-          id?: string
           lead_id?: string
           source?: string | null
           tag_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -693,6 +720,7 @@ export type Database = {
           data: Json
           id: string
           lead_id: string
+          user_id: string | null
           version_number: number
         }
         Insert: {
@@ -702,6 +730,7 @@ export type Database = {
           data?: Json
           id?: string
           lead_id: string
+          user_id?: string | null
           version_number?: number
         }
         Update: {
@@ -711,6 +740,7 @@ export type Database = {
           data?: Json
           id?: string
           lead_id?: string
+          user_id?: string | null
           version_number?: number
         }
         Relationships: [
@@ -725,97 +755,64 @@ export type Database = {
       }
       leads: {
         Row: {
-          birth_date: string | null
-          city: string | null
-          client_type: string | null
-          complement: string | null
-          country: string | null
           cpf: string | null
           created_at: string | null
           crm_status: string | null
           email: string | null
-          gender: string | null
           id: string
           lead_id: string
           metadata: Json | null
           name: string | null
-          neighborhood: string | null
           phone: string | null
           project_slug: string | null
-          region: string | null
           source: string | null
-          state: string | null
-          street: string | null
-          street_number: string | null
           updated_at: string | null
+          user_id: string | null
           utm_campaign: string | null
           utm_content: string | null
           utm_medium: string | null
           utm_source: string | null
           utm_term: string | null
-          zip_code: string | null
         }
         Insert: {
-          birth_date?: string | null
-          city?: string | null
-          client_type?: string | null
-          complement?: string | null
-          country?: string | null
           cpf?: string | null
           created_at?: string | null
           crm_status?: string | null
           email?: string | null
-          gender?: string | null
           id?: string
           lead_id?: string
           metadata?: Json | null
           name?: string | null
-          neighborhood?: string | null
           phone?: string | null
           project_slug?: string | null
-          region?: string | null
           source?: string | null
-          state?: string | null
-          street?: string | null
-          street_number?: string | null
           updated_at?: string | null
+          user_id?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
           utm_medium?: string | null
           utm_source?: string | null
           utm_term?: string | null
-          zip_code?: string | null
         }
         Update: {
-          birth_date?: string | null
-          city?: string | null
-          client_type?: string | null
-          complement?: string | null
-          country?: string | null
           cpf?: string | null
           created_at?: string | null
           crm_status?: string | null
           email?: string | null
-          gender?: string | null
           id?: string
           lead_id?: string
           metadata?: Json | null
           name?: string | null
-          neighborhood?: string | null
           phone?: string | null
           project_slug?: string | null
-          region?: string | null
           source?: string | null
-          state?: string | null
-          street?: string | null
-          street_number?: string | null
           updated_at?: string | null
+          user_id?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
           utm_medium?: string | null
           utm_source?: string | null
           utm_term?: string | null
-          zip_code?: string | null
         }
         Relationships: []
       }
@@ -830,6 +827,7 @@ export type Database = {
           offer_type: string | null
           product_id: string
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -841,6 +839,7 @@ export type Database = {
           offer_type?: string | null
           product_id: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -852,6 +851,7 @@ export type Database = {
           offer_type?: string | null
           product_id?: string
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -875,8 +875,8 @@ export type Database = {
           price: number
           slug: string
           type: string
-          color: string | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -889,8 +889,8 @@ export type Database = {
           price?: number
           slug: string
           type: string
-          color?: string | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -903,35 +903,8 @@ export type Database = {
           price?: number
           slug?: string
           type?: string
-          color?: string | null
           updated_at?: string | null
-        }
-        Relationships: []
-      }
-      profiles: {
-        Row: {
-          avatar_url: string | null
-          created_at: string | null
-          email: string | null
-          full_name: string | null
-          id: string
-          updated_at: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string | null
-          email?: string | null
-          full_name?: string | null
-          id: string
-          updated_at?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string | null
-          email?: string | null
-          full_name?: string | null
-          id?: string
-          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -943,7 +916,6 @@ export type Database = {
           gross_value: number | null
           id: string
           installments: number | null
-          is_recurring: boolean | null
           lead_id: string
           metadata: Json | null
           payment_method: string | null
@@ -955,8 +927,8 @@ export type Database = {
           purchase_date: string | null
           source: string | null
           status: string
-          subscription_id: string | null
           transaction_id: string | null
+          user_id: string | null
           utm_campaign: string | null
           utm_source: string | null
           value: number | null
@@ -968,7 +940,6 @@ export type Database = {
           gross_value?: number | null
           id?: string
           installments?: number | null
-          is_recurring?: boolean | null
           lead_id: string
           metadata?: Json | null
           payment_method?: string | null
@@ -980,8 +951,8 @@ export type Database = {
           purchase_date?: string | null
           source?: string | null
           status: string
-          subscription_id?: string | null
           transaction_id?: string | null
+          user_id?: string | null
           utm_campaign?: string | null
           utm_source?: string | null
           value?: number | null
@@ -993,7 +964,6 @@ export type Database = {
           gross_value?: number | null
           id?: string
           installments?: number | null
-          is_recurring?: boolean | null
           lead_id?: string
           metadata?: Json | null
           payment_method?: string | null
@@ -1005,8 +975,8 @@ export type Database = {
           purchase_date?: string | null
           source?: string | null
           status?: string
-          subscription_id?: string | null
           transaction_id?: string | null
+          user_id?: string | null
           utm_campaign?: string | null
           utm_source?: string | null
           value?: number | null
@@ -1028,6 +998,7 @@ export type Database = {
           id: string
           lead_id: string
           survey_id: string
+          user_id: string | null
         }
         Insert: {
           answers?: Json
@@ -1035,6 +1006,7 @@ export type Database = {
           id?: string
           lead_id: string
           survey_id: string
+          user_id?: string | null
         }
         Update: {
           answers?: Json
@@ -1042,6 +1014,7 @@ export type Database = {
           id?: string
           lead_id?: string
           survey_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1070,6 +1043,7 @@ export type Database = {
           name: string
           questions: Json | null
           updated_at: string | null
+          user_id: string | null
         }
         Insert: {
           campaign_id?: string | null
@@ -1080,6 +1054,7 @@ export type Database = {
           name: string
           questions?: Json | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
           campaign_id?: string | null
@@ -1090,6 +1065,7 @@ export type Database = {
           name?: string
           questions?: Json | null
           updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1129,89 +1105,92 @@ export type Database = {
         Row: {
           color: string | null
           created_at: string | null
-          description: string | null
           id: string
           name: string
           source: string | null
+          user_id: string | null
         }
         Insert: {
           color?: string | null
           created_at?: string | null
-          description?: string | null
           id?: string
           name: string
           source?: string | null
+          user_id?: string | null
         }
         Update: {
           color?: string | null
           created_at?: string | null
-          description?: string | null
           id?: string
           name?: string
           source?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
       tracking_events: {
         Row: {
-          id: string
-          visitor_id: string
-          lead_id: string | null
-          funnel_step_id: string | null
+          created_at: string | null
           event_type: string
+          fbc: string | null
+          fbp: string | null
+          funnel_step_id: string | null
+          id: string
+          ip_address: string | null
+          lead_id: string | null
+          metadata: Json | null
           page_url: string
           referrer_url: string | null
-          utm_source: string | null
-          utm_medium: string | null
+          user_agent: string | null
+          user_id: string | null
           utm_campaign: string | null
           utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
           utm_term: string | null
-          user_agent: string | null
-          ip_address: string | null
-          fbp: string | null
-          fbc: string | null
-          metadata: Json | null
-          created_at: string | null
+          visitor_id: string
         }
         Insert: {
-          id?: string
-          visitor_id: string
-          lead_id?: string | null
-          funnel_step_id?: string | null
+          created_at?: string | null
           event_type: string
+          fbc?: string | null
+          fbp?: string | null
+          funnel_step_id?: string | null
+          id?: string
+          ip_address?: string | null
+          lead_id?: string | null
+          metadata?: Json | null
           page_url: string
           referrer_url?: string | null
-          utm_source?: string | null
-          utm_medium?: string | null
+          user_agent?: string | null
+          user_id?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
           utm_term?: string | null
-          user_agent?: string | null
-          ip_address?: string | null
-          fbp?: string | null
-          fbc?: string | null
-          metadata?: Json | null
-          created_at?: string | null
+          visitor_id: string
         }
         Update: {
-          id?: string
-          visitor_id?: string
-          lead_id?: string | null
-          funnel_step_id?: string | null
+          created_at?: string | null
           event_type?: string
+          fbc?: string | null
+          fbp?: string | null
+          funnel_step_id?: string | null
+          id?: string
+          ip_address?: string | null
+          lead_id?: string | null
+          metadata?: Json | null
           page_url?: string
           referrer_url?: string | null
-          utm_source?: string | null
-          utm_medium?: string | null
+          user_agent?: string | null
+          user_id?: string | null
           utm_campaign?: string | null
           utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
           utm_term?: string | null
-          user_agent?: string | null
-          ip_address?: string | null
-          fbp?: string | null
-          fbc?: string | null
-          metadata?: Json | null
-          created_at?: string | null
+          visitor_id?: string
         }
         Relationships: [
           {
@@ -1220,44 +1199,22 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "funnel_steps"
             referencedColumns: ["id"]
-          }
+          },
+          {
+            foreignKeyName: "tracking_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tracking_events_visitor_id_fkey"
+            columns: ["visitor_id"]
+            isOneToOne: false
+            referencedRelation: "visitors"
+            referencedColumns: ["id"]
+          },
         ]
-      }
-      team_invitations: {
-        Row: {
-          created_at: string | null
-          created_by: string
-          email: string
-          expires_at: string
-          id: string
-          role: Database["public"]["Enums"]["app_role"]
-          token: string
-          used_at: string | null
-          used_by: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          created_by: string
-          email: string
-          expires_at?: string
-          id?: string
-          role: Database["public"]["Enums"]["app_role"]
-          token?: string
-          used_at?: string | null
-          used_by?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          created_by?: string
-          email?: string
-          expires_at?: string
-          id?: string
-          role?: Database["public"]["Enums"]["app_role"]
-          token?: string
-          used_at?: string | null
-          used_by?: string | null
-        }
-        Relationships: []
       }
       user_roles: {
         Row: {
@@ -1280,6 +1237,50 @@ export type Database = {
         }
         Relationships: []
       }
+      visitors: {
+        Row: {
+          created_at: string | null
+          first_seen_at: string | null
+          id: string
+          last_seen_at: string | null
+          lead_id: string | null
+          merged_at: string | null
+          updated_at: string | null
+          user_id: string | null
+          visitor_uuid: string
+        }
+        Insert: {
+          created_at?: string | null
+          first_seen_at?: string | null
+          id?: string
+          last_seen_at?: string | null
+          lead_id?: string | null
+          merged_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          visitor_uuid: string
+        }
+        Update: {
+          created_at?: string | null
+          first_seen_at?: string | null
+          id?: string
+          last_seen_at?: string | null
+          lead_id?: string | null
+          merged_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+          visitor_uuid?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "visitors_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       webhook_logs: {
         Row: {
           created_at: string | null
@@ -1290,6 +1291,7 @@ export type Database = {
           payload: Json
           processed: boolean | null
           source: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -1300,6 +1302,7 @@ export type Database = {
           payload: Json
           processed?: boolean | null
           source: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -1310,6 +1313,7 @@ export type Database = {
           payload?: Json
           processed?: boolean | null
           source?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -1326,7 +1330,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      has_any_role: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1352,116 +1355,116 @@ type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-  | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-  : never = never,
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-    DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
-  ? R
-  : never
+    ? R
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-    DefaultSchema["Views"])
-  ? (DefaultSchema["Tables"] &
-    DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-      Row: infer R
-    }
-  ? R
-  : never
-  : never
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema["Tables"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Insert: infer I
-  }
-  ? I
-  : never
+      Insert: infer I
+    }
+    ? I
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-    Insert: infer I
-  }
-  ? I
-  : never
-  : never
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
+    : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-  | keyof DefaultSchema["Tables"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-    Update: infer U
-  }
-  ? U
-  : never
+      Update: infer U
+    }
+    ? U
+    : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
-  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-    Update: infer U
-  }
-  ? U
-  : never
-  : never
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
+    : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-  | keyof DefaultSchema["Enums"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
-  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-  : never
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-  | keyof DefaultSchema["CompositeTypes"]
-  | { schema: keyof DatabaseWithoutInternals },
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
-  ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-  : never = never,
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-  : never
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   public: {

@@ -2,16 +2,9 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { Database } from "@/integrations/supabase/types";
 
-export interface FacebookAdsConfig {
-  id: string;
-  access_token: string;
-  ad_account_id: string;
-  is_active: boolean;
-  last_sync_at: string | null;
-  created_at: string;
-  updated_at: string;
-}
+export type FacebookAdsConfig = Database["public"]["Tables"]["fb_ads_config"]["Row"];
 
 export const useFacebookAdsConfig = () => {
   const { user } = useAuth();
@@ -25,12 +18,12 @@ export const useFacebookAdsConfig = () => {
         .eq("is_active", true);
 
       if (user?.id) {
-        query = query.eq("user_id" as any, user.id);
+        query = query.eq("user_id", user.id);
       }
 
       const { data, error } = await query.maybeSingle();
       if (error) throw error;
-      return data as FacebookAdsConfig | null;
+      return data;
     },
   });
 };
@@ -50,7 +43,9 @@ export const useSaveFacebookAdsConfig = () => {
       existingConfigId?: string;
     }) => {
       if (existingConfigId) {
-        const updateData: Record<string, string> = { ad_account_id: adAccountId };
+        const updateData: Database["public"]["Tables"]["fb_ads_config"]["Update"] = { 
+          ad_account_id: adAccountId 
+        };
 
         if (accessToken !== "••••••••••••••••") {
           updateData.access_token = accessToken;
@@ -66,16 +61,16 @@ export const useSaveFacebookAdsConfig = () => {
         if (error) throw error;
         return data;
       } else {
-        const insertData: Record<string, unknown> = {
+        const insertData: Database["public"]["Tables"]["fb_ads_config"]["Insert"] = {
           access_token: accessToken,
           ad_account_id: adAccountId,
           is_active: true,
+          user_id: user?.id || null
         };
-        if (user?.id) insertData.user_id = user.id;
 
         const { data, error } = await supabase
           .from("fb_ads_config")
-          .insert(insertData as any)
+          .insert(insertData)
           .select()
           .single();
 
@@ -177,9 +172,9 @@ export const useSyncFacebookAds = () => {
 
       // Check if the response indicates an error
       if (data && !data.success) {
-        const err = new Error(data.error || "Erro ao sincronizar");
-        (err as any).isExpired = data.isExpired;
-        (err as any).code = data.code;
+        const err = new Error(data.error || "Erro ao sincronizar") as Error & { isExpired?: boolean; code?: number };
+        err.isExpired = data.isExpired;
+        err.code = data.code;
         throw err;
       }
 

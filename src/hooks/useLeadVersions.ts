@@ -1,70 +1,28 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Database } from "@/integrations/supabase/types";
 
-export interface LeadVersionData {
-  id?: string;
-  lead_id?: string;
-  name?: string | null;
-  email?: string | null;
-  phone?: string | null;
-  cpf?: string | null;
-  crm_status?: string | null;
-  source?: string | null;
-  created_at?: string | null;
-  updated_at?: string | null;
-  metadata?: Record<string, unknown>;
-  [key: string]: unknown;
-}
-
-export interface LeadVersion {
-  id: string;
-  lead_id: string;
-  version_number: number;
-  data: LeadVersionData;
-  changed_by: string | null;
-  changed_at: string;
-  change_summary: string | null;
-}
-
-// Raw row type returned from the untyped lead_versions table
-type LeadVersionDbRow = {
-  id: string;
-  lead_id: string;
-  version_number: number;
-  data: LeadVersionData;
-  changed_by: string | null;
-  changed_at: string;
-  change_summary: string | null;
-};
+export type LeadVersion = Database["public"]["Tables"]["lead_versions"]["Row"];
+export type LeadVersionData = any; // JSON field, can keep as any or define more strictly if needed
 
 export const useLeadVersions = (leadId: string) => {
   return useQuery({
     queryKey: ["lead-versions", leadId],
     queryFn: async () => {
       try {
-        // Direct table access - cast to any to bypass type checking for new table
         const result = await supabase
-          .from("lead_versions" as any)
+          .from("lead_versions")
           .select("*")
           .eq("lead_id", leadId)
           .order("version_number", { ascending: false });
 
         if (result.error) {
-          // Table might not exist yet - return empty array
-          console.warn("lead_versions table not ready:", result.error.message);
+          console.warn("Error fetching lead versions:", result.error.message);
           return [] as LeadVersion[];
         }
 
-        return (result.data as LeadVersionDbRow[] || []).map((v) => ({
-          id: v.id,
-          lead_id: v.lead_id,
-          version_number: v.version_number,
-          data: v.data as LeadVersionData,
-          changed_by: v.changed_by,
-          changed_at: v.changed_at,
-          change_summary: v.change_summary,
-        })) as LeadVersion[];
+        return result.data as LeadVersion[];
       } catch (err) {
         console.warn("Error fetching lead versions:", err);
         return [] as LeadVersion[];
@@ -89,20 +47,20 @@ export const useCreateLeadVersion = () => {
     }) => {
       // Get the current max version number
       const { data: existingVersions } = await supabase
-        .from("lead_versions" as any)
+        .from("lead_versions")
         .select("version_number")
         .eq("lead_id", leadId)
         .order("version_number", { ascending: false })
         .limit(1);
 
       const nextVersion = existingVersions && existingVersions.length > 0 
-        ? ((existingVersions[0] as LeadVersionDbRow).version_number || 0) + 1 
+        ? (existingVersions[0].version_number || 0) + 1 
         : 1;
 
       const { data: session } = await supabase.auth.getSession();
 
       const { data, error } = await supabase
-        .from("lead_versions" as any)
+        .from("lead_versions")
         .insert({
           lead_id: leadId,
           version_number: nextVersion,
@@ -144,23 +102,23 @@ export const useRestoreLeadVersion = () => {
       if (currentLead) {
         // Get max version
         const { data: existingVersions } = await supabase
-          .from("lead_versions" as any)
+          .from("lead_versions")
           .select("version_number")
           .eq("lead_id", leadId)
           .order("version_number", { ascending: false })
           .limit(1);
 
         const nextVersion = existingVersions && existingVersions.length > 0 
-          ? ((existingVersions[0] as LeadVersionDbRow).version_number || 0) + 1 
+          ? (existingVersions[0].version_number || 0) + 1 
           : 1;
 
         const { data: session } = await supabase.auth.getSession();
 
         // Save current state before overwriting
-        await supabase.from("lead_versions" as any).insert({
+        await supabase.from("lead_versions").insert({
           lead_id: leadId,
           version_number: nextVersion,
-          data: currentLead,
+          data: currentLead as any,
           changed_by: session?.session?.user?.id || null,
           change_summary: "Estado antes da restauração",
         });
