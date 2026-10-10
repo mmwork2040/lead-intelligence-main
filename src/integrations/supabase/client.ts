@@ -279,18 +279,27 @@ export const supabase = {
       }
     },
 
+    listeners: new Set<(event: string, session: any) => void>(),
+
     async signInWithPassword({ email, password }: { email: string; password: string }) {
       try {
         const session = await account.createEmailPasswordSession(email, password);
         const user = await account.get();
+        const authSession = {
+          access_token: session.$id,
+          user: {
+            id: user.$id,
+            email: user.email,
+            name: user.name,
+          },
+        };
+        supabase.auth.listeners.forEach(cb => {
+          try { cb('SIGNED_IN', authSession); } catch(e) {}
+        });
         return {
           data: {
-            session,
-            user: {
-              id: user.$id,
-              email: user.email,
-              name: user.name,
-            },
+            session: authSession,
+            user: authSession.user,
           },
           error: null,
         };
@@ -302,15 +311,22 @@ export const supabase = {
     async signUp({ email, password, options }: { email: string; password: string; options?: any }) {
       try {
         const user = await account.create(ID.unique(), email, password);
-        await account.createEmailPasswordSession(email, password);
+        const session = await account.createEmailPasswordSession(email, password);
+        const authSession = {
+          access_token: session.$id,
+          user: {
+            id: user.$id,
+            email: user.email,
+            name: user.name,
+          },
+        };
+        supabase.auth.listeners.forEach(cb => {
+          try { cb('SIGNED_IN', authSession); } catch(e) {}
+        });
         return {
           data: {
-            user: {
-              id: user.$id,
-              email: user.email,
-              name: user.name,
-            },
-            session: {},
+            user: authSession.user,
+            session: authSession,
           },
           error: null,
         };
@@ -322,6 +338,9 @@ export const supabase = {
     async signOut() {
       try {
         await account.deleteSession('current');
+        supabase.auth.listeners.forEach(cb => {
+          try { cb('SIGNED_OUT', null); } catch(e) {}
+        });
         return { error: null };
       } catch (err: any) {
         return { error: err };
@@ -329,6 +348,8 @@ export const supabase = {
     },
 
     onAuthStateChange(callback: (event: string, session: any) => void) {
+      supabase.auth.listeners.add(callback);
+
       // Check initial state
       account.get()
         .then(user => {
@@ -344,7 +365,9 @@ export const supabase = {
       return {
         data: {
           subscription: {
-            unsubscribe: () => {},
+            unsubscribe: () => {
+              supabase.auth.listeners.delete(callback);
+            },
           },
         },
       };
